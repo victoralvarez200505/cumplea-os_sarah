@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎂 Control de Cumpleaños — 30 de Mayo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.2/confetti.browser.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #040810;
+      --cyan: #00f5ff;
+      --pink: #ff0080;
+      --green: #00ff88;
+      --purple: #8b2be2;
+    }
+
+    body {
+      font-family: 'Rajdhani', sans-serif;
+      background: var(--bg);
+      color: #e2e8f0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* === BACKGROUND === */
+    .bg-grid {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: radial-gradient(rgba(0,245,255,0.10) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    .bg-orb {
+      position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
+      filter: blur(90px);
+    }
+    .orb-1 { width: 520px; height: 420px; top: -8%; left: 28%; background: radial-gradient(ellipse, rgba(255,0,128,0.07), transparent 70%); }
+    .orb-2 { width: 380px; height: 380px; bottom: 5%; right: 0%; background: radial-gradient(ellipse, rgba(0,245,255,0.06), transparent 70%); }
+    .orb-3 { width: 320px; height: 320px; top: 35%; left: -6%; background: radial-gradient(ellipse, rgba(139,43,226,0.06), transparent 70%); }
+    .orb-4 { width: 250px; height: 250px; bottom: 20%; left: 25%; background: radial-gradient(ellipse, rgba(0,255,136,0.04), transparent 70%); }
+
+    /* Scanline */
+    .scanline {
+      position: fixed; top: -2px; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(0,245,255,0.45), transparent);
+      animation: scan 6s linear infinite;
+      pointer-events: none; z-index: 200;
+    }
+
+    /* Floating particles */
+    .particle {
+      position: fixed; width: 2px; height: 2px; border-radius: 50%;
+      pointer-events: none; z-index: 0;
+      animation: drift linear infinite;
+    }
+
+    /* === KEYFRAMES === */
+    @keyframes scan { from { top: -2px; } to { top: 100vh; } }
+
+    @keyframes drift {
+      from { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      to { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+    }
+
+    @keyframes float-a {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-9px); }
+    }
+    @keyframes float-b {
+      0%, 100% { transform: translateY(0px) rotate(-1deg); }
+      50% { transform: translateY(-7px) rotate(1deg); }
+    }
+
+    @keyframes pulse-cyan {
+      0%, 100% { box-shadow: 0 0 18px rgba(0,245,255,0.18), 0 0 50px rgba(0,245,255,0.05), inset 0 1px 0 rgba(0,245,255,0.08); }
+      50%       { box-shadow: 0 0 30px rgba(0,245,255,0.30), 0 0 80px rgba(0,245,255,0.12), inset 0 1px 0 rgba(0,245,255,0.15); }
+    }
+    @keyframes pulse-pink {
+      0%, 100% { box-shadow: 0 0 22px rgba(255,0,128,0.32), 0 0 60px rgba(255,0,128,0.10); }
+      50%       { box-shadow: 0 0 44px rgba(255,0,128,0.55), 0 0 100px rgba(255,0,128,0.22); }
+    }
+
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.18; } }
+    @keyframes blink-slow { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.1; } }
+
+    @keyframes slide-in {
+      from { opacity: 0; transform: translateY(24px) scale(0.95); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes shimmer-btn {
+      0%   { background-position: -300% center; }
+      100% { background-position: 300% center; }
+    }
+
+    @keyframes text-shimmer {
+      0%   { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+
+    @keyframes spin-hue { from { filter: hue-rotate(0deg); } to { filter: hue-rotate(360deg); } }
+
+    /* === LAYOUT === */
+    .wrap {
+      position: relative; z-index: 1;
+      max-width: 880px; margin: 0 auto;
+      padding: 28px 16px 64px;
+    }
+
+    /* === HEADER === */
+    header { text-align: center; margin-bottom: 40px; }
+
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(0,245,255,0.05);
+      border: 1px solid rgba(0,245,255,0.14);
+      border-radius: 100px;
+      padding: 5px 16px;
+      font-family: 'Orbitron', monospace;
+      font-size: 9px; letter-spacing: 3px;
+      color: rgba(0,245,255,0.65);
+      margin-bottom: 18px;
+    }
+
+    .status-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: blink 1.6s ease-in-out infinite;
+    }
+
+    .hero-title {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      font-size: clamp(30px, 8vw, 60px);
+      line-height: 1.0;
+      background: linear-gradient(135deg, #ffffff 0%, #ffaad4 35%, #c89fff 65%, #00f5ff 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: text-shimmer 4s linear infinite;
+      margin-bottom: 10px;
+    }
+
+    .hero-sub {
+      font-family: 'Orbitron', monospace;
+      font-size: 11px; letter-spacing: 3px;
+      color: rgba(226,232,240,0.32);
+    }
+
+    /* === SECTION LABEL === */
+    .sec-label {
+      font-family: 'Orbitron', monospace;
+      font-size: 8px; letter-spacing: 3px;
+      color: rgba(255,255,255,0.2);
+      margin-bottom: 12px;
+    }
+
+    /* === COUNTDOWN === */
+    .countdown-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 36px;
+    }
+
+    .digit-card {
+      background: linear-gradient(160deg, rgba(0,18,44,0.82) 0%, rgba(0,8,24,0.92) 100%);
+      border: 1px solid rgba(0,245,255,0.14);
+      border-radius: 20px;
+      padding: 22px 8px 18px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      animation: float-a 3.6s ease-in-out infinite, pulse-cyan 3s ease-in-out infinite;
+    }
+
+    .digit-card:nth-child(2) { animation-delay: 0.25s, 0.4s; }
+    .digit-card:nth-child(3) { animation-delay: 0.5s, 0.8s; }
+    .digit-card:nth-child(4) { animation-delay: 0.75s, 1.2s; }
+
+    .digit-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,245,255,0.7), transparent);
+    }
+
+    .digit-card::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% -10%, rgba(0,245,255,0.09) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .dv {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      font-size: clamp(32px, 9vw, 56px);
+      color: var(--cyan);
+      text-shadow: 0 0 22px rgba(0,245,255,0.55), 0 0 50px rgba(0,245,255,0.2);
+      line-height: 1; display: block;
+    }
+
+    .dl {
+      font-family: 'Orbitron', monospace;
+      font-size: 8px; letter-spacing: 2px;
+      color: rgba(0,245,255,0.38);
+      margin-top: 10px; display: block;
+    }
+
+    /* === MAIN BUTTON === */
+    .btn-wrap { text-align: center; margin-bottom: 44px; }
+
+    .btn-activate {
+      position: relative;
+      background: linear-gradient(135deg, #ff0080 0%, #8b2be2 100%);
+      border: none;
+      border-radius: 50px;
+      padding: 19px 48px;
+      color: #fff;
+      font-family: 'Orbitron', monospace;
+      font-weight: 700;
+      font-size: clamp(12px, 3.2vw, 17px);
+      letter-spacing: 2.5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      animation: pulse-pink 2.6s ease-in-out infinite;
+      transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), letter-spacing 0.35s;
+      overflow: hidden;
+      -webkit-appearance: none;
+    }
+
+    .btn-activate::before {
+      content: '';
+      position: absolute; inset: -2px;
+      background: linear-gradient(135deg, #ff0080, #8b2be2, #00f5ff, #ff0080);
+      background-size: 400%;
+      border-radius: 52px;
+      z-index: -1;
+      animation: shimmer-btn 3.5s linear infinite;
+    }
+
+    .btn-activate::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+      transition: left 0.55s ease;
+    }
+
+    .btn-activate:hover  { transform: scale(1.07); letter-spacing: 4px; }
+    .btn-activate:hover::after { left: 100%; }
+    .btn-activate:active { transform: scale(0.96); }
+
+    .btn-icon { font-size: 20px; }
+
+    /* === TOGGLES === */
+    .toggles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .toggle-btn {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 18px;
+      padding: 16px 10px 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s ease, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+      -webkit-appearance: none;
+    }
+
+    .toggle-btn:hover { transform: translateY(-3px); }
+
+    .toggle-btn.ap { border-color: rgba(255,0,128,0.38); background: rgba(255,0,128,0.07); box-shadow: 0 0 22px rgba(255,0,128,0.14); }
+    .toggle-btn.ac { border-color: rgba(0,245,255,0.38); background: rgba(0,245,255,0.07); box-shadow: 0 0 22px rgba(0,245,255,0.14); }
+    .toggle-btn.ag { border-color: rgba(0,255,136,0.38); background: rgba(0,255,136,0.07); box-shadow: 0 0 22px rgba(0,255,136,0.14); }
+
+    .t-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .t-icon { font-size: 18px; }
+
+    .sw {
+      width: 38px; height: 21px;
+      border-radius: 10.5px;
+      background: rgba(255,255,255,0.08);
+      padding: 2.5px;
+      display: flex; align-items: center;
+      justify-content: flex-start;
+      transition: all 0.35s cubic-bezier(0.68,-0.55,0.27,1.55);
+      flex-shrink: 0;
+    }
+
+    .sw.sp { background: var(--pink); justify-content: flex-end; }
+    .sw.sc { background: var(--cyan); justify-content: flex-end; }
+    .sw.sg { background: var(--green); justify-content: flex-end; }
+
+    .sw-thumb {
+      width: 16px; height: 16px; border-radius: 50%;
+      background: white;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.45);
+      flex-shrink: 0;
+    }
+
+    .t-lbl {
+      font-family: 'Orbitron', monospace;
+      font-size: 8.5px; letter-spacing: 0.5px;
+      text-align: center; line-height: 1.4;
+      color: rgba(226,232,240,0.4);
+      transition: color 0.3s;
+    }
+
+    .toggle-btn.ap .t-lbl { color: rgba(255,0,128,0.85); }
+    .toggle-btn.ac .t-lbl { color: rgba(0,245,255,0.85); }
+    .toggle-btn.ag .t-lbl { color: rgba(0,255,136,0.85); }
+
+    /* === PANELS === */
+    .panel {
+      border-radius: 22px;
+      padding: 26px;
+      margin-bottom: 12px;
+      animation: slide-in 0.42s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    }
+
+    .panel-pink  { background: rgba(255,0,128,0.05);  border: 1px solid rgba(255,0,128,0.18); }
+    .panel-cyan  { background: rgba(0,245,255,0.04);  border: 1px solid rgba(0,245,255,0.16); }
+    .panel-green { background: rgba(0,255,136,0.04);  border: 1px solid rgba(0,255,136,0.16); }
+
+    .panel-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 11px; letter-spacing: 3px;
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    /* --- Message --- */
+    .msg-text {
+      font-size: 16px; line-height: 1.95;
+      text-align: center; color: rgba(230,220,245,0.88);
+      max-width: 520px; margin: 0 auto 22px;
+    }
+
+    .emoji-row { display: flex; justify-content: center; gap: 14px; }
+    .emoji-row span {
+      font-size: 22px; display: inline-block;
+      animation: float-b 2.8s ease-in-out infinite;
+    }
+    .emoji-row span:nth-child(2) { animation-delay: 0.45s; }
+    .emoji-row span:nth-child(3) { animation-delay: 0.9s; }
+    .emoji-row span:nth-child(4) { animation-delay: 1.35s; }
+    .emoji-row span:nth-child(5) { animation-delay: 1.8s; }
+
+    /* --- Gallery --- */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .photo-card {
+      border-radius: 13px; overflow: hidden;
+      aspect-ratio: 1;
+      border: 2px solid rgba(0,245,255,0.14);
+      transition: transform 0.38s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.38s ease;
+      position: relative; cursor: pointer;
+    }
+
+    .photo-card:nth-child(1) { transform: rotate(-2.5deg); }
+    .photo-card:nth-child(2) { transform: rotate(1.8deg); }
+    .photo-card:nth-child(3) { transform: rotate(-1.2deg); }
+    .photo-card:nth-child(4) { transform: rotate(2.2deg); }
+    .photo-card:nth-child(5) { transform: rotate(-1.8deg); }
+    .photo-card:nth-child(6) { transform: rotate(2.8deg); }
+
+    .photo-card:hover {
+      transform: rotate(0deg) scale(1.09) !important;
+      z-index: 10;
+      box-shadow: 0 20px 50px rgba(0,245,255,0.22);
+    }
+
+    .photo-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .photo-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 60%, rgba(0,10,30,0.7) 100%);
+      pointer-events: none;
+    }
+
+    .gallery-lbl {
+      text-align: center;
+      font-family: 'Orbitron', monospace;
+      font-size: 8.5px; letter-spacing: 3px;
+      color: rgba(0,245,255,0.28);
+      margin-top: 15px;
+    }
+
+    /* --- Missions --- */
+    .mission-item {
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 13px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 9px;
+      user-select: none;
+    }
+
+    .mission-item:hover   { transform: translateX(5px); background: rgba(0,255,136,0.05); border-color: rgba(0,255,136,0.12); }
+    .mission-item.done    { background: rgba(0,255,136,0.08); border-color: rgba(0,255,136,0.24); }
+
+    .m-emoji { font-size: 22px; flex-shrink: 0; }
+
+    .m-text {
+      flex: 1; font-size: 14.5px;
+      color: rgba(226,232,240,0.88);
+      transition: all 0.3s;
+    }
+
+    .mission-item.done .m-text {
+      text-decoration: line-through;
+      color: rgba(0,255,136,0.45);
+    }
+
+    .m-xp {
+      font-family: 'Orbitron', monospace; font-size: 9.5px;
+      color: var(--green);
+      background: rgba(0,255,136,0.09);
+      border: 1px solid rgba(0,255,136,0.14);
+      padding: 4px 9px; border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .m-check {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.14);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; flex-shrink: 0;
+      transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+      color: transparent;
+    }
+
+    .mission-item.done .m-check {
+      background: var(--green);
+      border-color: var(--green);
+      box-shadow: 0 0 12px rgba(0,255,136,0.45);
+      color: #04201a;
+    }
+
+    /* Progress */
+    .progress-wrap {
+      margin-top: 18px;
+      background: rgba(0,255,136,0.05);
+      border: 1px solid rgba(0,255,136,0.1);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex; align-items: center; gap: 14px;
+    }
+
+    .p-lbl {
+      font-family: 'Orbitron', monospace;
+      font-size: 9px; letter-spacing: 2.5px;
+      color: rgba(0,255,136,0.55); flex-shrink: 0;
+    }
+
+    .p-bar {
+      flex: 1; height: 5px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 3px; overflow: hidden;
+    }
+
+    .p-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), #00ffcc);
+      border-radius: 3px;
+      box-shadow: 0 0 10px rgba(0,255,136,0.65);
+      transition: width 0.55s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    .p-count {
+      font-family: 'Orbitron', monospace;
+      font-size: 11px; color: var(--green);
+      flex-shrink: 0;
+    }
+
+    /* === FOOTER === */
+    footer {
+      text-align: center;
+      padding-top: 28px;
+      border-top: 1px solid rgba(255,255,255,0.045);
+      margin-top: 10px;
+    }
+
+    footer p {
+      font-family: 'Orbitron', monospace;
+      font-size: 8.5px; letter-spacing: 3px;
+      color: rgba(255,255,255,0.12);
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 500px) {
+      .countdown-grid { gap: 7px; }
+      .toggles-grid   { gap: 7px; }
+      .gallery-grid   { grid-template-columns: repeat(2, 1fr); }
+      .btn-activate   { padding: 16px 28px; gap: 10px; }
+      .panel          { padding: 18px 14px; }
+      .hero-title     { font-size: clamp(26px, 10vw, 44px); }
+      .t-lbl          { font-size: 7.5px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Backgrounds -->
+<div class="bg-grid"></div>
+<div class="bg-orb orb-1"></div>
+<div class="bg-orb orb-2"></div>
+<div class="bg-orb orb-3"></div>
+<div class="bg-orb orb-4"></div>
+<div class="scanline"></div>
+
+<!-- Floating particles -->
+<div id="particles"></div>
+
+<div class="wrap">
+
+  <!-- HEADER -->
+  <header>
+    <div class="status-pill">
+      <span class="status-dot"></span>
+      SISTEMA ACTIVO — MISIÓN CUMPLEAÑOS
+    </div>
+    <h1 class="hero-title">CONTROL DE<br>CUMPLEAÑOS</h1>
+    <p class="hero-sub">◈ Objetivo: 30 de Mayo ◈</p>
+  </header>
+
+  <!-- COUNTDOWN -->
+  <p class="sec-label">[ TIEMPO RESTANTE PARA DETONACIÓN ]</p>
+  <div class="countdown-grid">
+    <div class="digit-card">
+      <span class="dv" id="days">00</span>
+      <span class="dl">DÍAS</span>
+    </div>
+    <div class="digit-card">
+      <span class="dv" id="hours">00</span>
+      <span class="dl">HORAS</span>
+    </div>
+    <div class="digit-card">
+      <span class="dv" id="minutes">00</span>
+      <span class="dl">MINUTOS</span>
+    </div>
+    <div class="digit-card">
+      <span class="dv" id="seconds">00</span>
+      <span class="dl">SEG</span>
+    </div>
+  </div>
+
+  <!-- ACTIVATE BUTTON -->
+  <div class="btn-wrap">
+    <button class="btn-activate" id="btn-main" onclick="activateSurprise()">
+      <span class="btn-icon">⚡</span>
+      <span id="btn-txt">¡ACTIVAR SORPRESA!</span>
+      <span class="btn-icon">⚡</span>
+    </button>
+  </div>
+
+  <!-- TOGGLES -->
+  <p class="sec-label">[ MÓDULOS DE MISIÓN ]</p>
+  <div class="toggles-grid">
+    <button class="toggle-btn" id="tb-msg" onclick="togglePanel('msg')">
+      <div class="t-top">
+        <span class="t-icon">💌</span>
+        <div class="sw" id="sw-msg"><div class="sw-thumb"></div></div>
+      </div>
+      <span class="t-lbl">MENSAJE<br>ESPECIAL</span>
+    </button>
+
+    <button class="toggle-btn" id="tb-gal" onclick="togglePanel('gal')">
+      <div class="t-top">
+        <span class="t-icon">📷</span>
+        <div class="sw" id="sw-gal"><div class="sw-thumb"></div></div>
+      </div>
+      <span class="t-lbl">GALERÍA<br>FOTOGRÁFICA</span>
+    </button>
+
+    <button class="toggle-btn" id="tb-mis" onclick="togglePanel('mis')">
+      <div class="t-top">
+        <span class="t-icon">🎯</span>
+        <div class="sw" id="sw-mis"><div class="sw-thumb"></div></div>
+      </div>
+      <span class="t-lbl">MISIONES DE<br>CUMPLEAÑOS</span>
+    </button>
+  </div>
+
+  <!-- PANELS AREA -->
+  <div id="panels-area">
+
+    <!-- MESSAGE PANEL -->
+    <div id="p-msg" class="panel panel-pink" style="display:none">
+      <p class="panel-title" style="color:#ff80c0">◈ MENSAJE TRANSMITIDO ◈</p>
+      <div style="text-align:center;font-size:40px;margin-bottom:18px">🎂</div>
+      <p class="msg-text">
+        En este día especial, el universo entero conspira para recordarte lo increíble que eres.
+        Que este año esté lleno de aventuras inesperadas, risas que duelan el estómago y momentos
+        que se conviertan en tus mejores recuerdos. ¡Feliz cumpleaños, que lo celebres a lo grande! 🌟
+      </p>
+      <div class="emoji-row">
+        <span>💫</span><span>🌸</span><span>✨</span><span>🎉</span><span>💖</span>
+      </div>
+    </div>
+
+    <!-- GALLERY PANEL -->
+    <div id="p-gal" class="panel panel-cyan" style="display:none">
+      <p class="panel-title" style="color:var(--cyan)">◈ GALERÍA DE MOMENTOS ◈</p>
+      <div class="gallery-grid">
+        <div class="photo-card">
+          <img src="https://picsum.photos/seed/bday01/300/300" alt="Momento 1" loading="lazy">
+          <div class="photo-overlay"></div>
+        </div>
+        <div class="photo-card">
+          <img src="https://picsum.photos/seed/bday02/300/300" alt="Momento 2" loading="lazy">
+          <div class="photo-overlay"></div>
+        </div>
+        <div class="photo-card">
+          <img src="https://picsum.photos/seed/bday03/300/300" alt="Momento 3" loading="lazy">
+          <div class="photo-overlay"></div>
+        </div>
+        <div class="photo-card">
+          <img src="https://picsum.photos/seed/bday04/300/300" alt="Momento 4" loading="lazy">
+          <div class="photo-overlay"></div>
+        </div>
+        <div class="photo-card">
+          <img src="https://picsum.photos/seed/bday05/300/300" alt="Momento 5" loading="lazy">
+          <div class="photo-overlay"></div>
+        </div>
+        <div class="photo-card">
+          <img src="https://picsum.photos/seed/bday06/300/300" alt="Momento 6" loading="lazy">
+          <div class="photo-overlay"></div>
+        </div>
+      </div>
+      <p class="gallery-lbl">RECUERDOS CLASIFICADOS — NIVEL MÁXIMO</p>
+    </div>
+
+    <!-- MISSIONS PANEL -->
+    <div id="p-mis" class="panel panel-green" style="display:none">
+      <p class="panel-title" style="color:var(--green)">◈ MISIONES DE CUMPLEAÑOS ◈</p>
+
+      <div class="mission-item" onclick="toggleMission(this)">
+        <span class="m-emoji">🎂</span>
+        <span class="m-text">Soplar las velas de un solo intento</span>
+        <span class="m-xp">500 XP</span>
+        <div class="m-check">✓</div>
+      </div>
+      <div class="mission-item" onclick="toggleMission(this)">
+        <span class="m-emoji">🥂</span>
+        <span class="m-text">Brindar con todos los presentes</span>
+        <span class="m-xp">300 XP</span>
+        <div class="m-check">✓</div>
+      </div>
+      <div class="mission-item" onclick="toggleMission(this)">
+        <span class="m-emoji">📸</span>
+        <span class="m-text">Tomarse la foto perfecta del día</span>
+        <span class="m-xp">400 XP</span>
+        <div class="m-check">✓</div>
+      </div>
+      <div class="mission-item" onclick="toggleMission(this)">
+        <span class="m-emoji">🕺</span>
+        <span class="m-text">Bailar aunque no suene tu canción favorita</span>
+        <span class="m-xp">350 XP</span>
+        <div class="m-check">✓</div>
+      </div>
+      <div class="mission-item" onclick="toggleMission(this)">
+        <span class="m-emoji">🌟</span>
+        <span class="m-text">Pedir un deseo súper secreto</span>
+        <span class="m-xp">999 XP</span>
+        <div class="m-check">✓</div>
+      </div>
+
+      <div class="progress-wrap">
+        <span class="p-lbl">PROGRESO</span>
+        <div class="p-bar"><div class="p-fill" id="p-fill" style="width:0%"></div></div>
+        <span class="p-count" id="p-count">0/5</span>
+      </div>
+    </div>
+
+  </div><!-- /panels-area -->
+
+  <footer>
+    <p>SISTEMA v1.0 ◈ CLASIFICADO: ESPECIAL ◈ MISIÓN: 30.MAY ◈ TODOS LOS SISTEMAS LISTOS</p>
+  </footer>
+
+</div><!-- /wrap -->
+
+<script>
+// ─── PARTICLES ───────────────────────────────────────────────
+(function spawnParticles() {
+  const colors = ['#00f5ff','#ff0080','#00ff88','#8b2be2','#ffdd00'];
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 22; i++) {
+    const el = document.createElement('div');
+    el.className = 'particle';
+    const col = colors[Math.floor(Math.random() * colors.length)];
+    const size = Math.random() * 2 + 1;
+    el.style.cssText = `
+      left:${Math.random()*100}vw;
+      width:${size}px; height:${size}px;
+      background:${col};
+      box-shadow:0 0 ${size*3}px ${col};
+      animation-duration:${8 + Math.random()*14}s;
+      animation-delay:${Math.random()*12}s;
+    `;
+    container.appendChild(el);
+  }
+})();
+
+// ─── COUNTDOWN ───────────────────────────────────────────────
+function updateCountdown() {
+  const now = new Date();
+  const target = new Date(now.getFullYear(), 4, 30, 0, 0, 0);
+  if (now >= target) target.setFullYear(target.getFullYear() + 1);
+  const diff = target - now;
+
+  const pad = n => String(Math.floor(n)).padStart(2,'0');
+  document.getElementById('days').textContent    = pad(diff / 86400000);
+  document.getElementById('hours').textContent   = pad((diff % 86400000) / 3600000);
+  document.getElementById('minutes').textContent = pad((diff % 3600000) / 60000);
+  document.getElementById('seconds').textContent = pad((diff % 60000) / 1000);
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+// ─── CONFETTI ────────────────────────────────────────────────
+function fireConfetti(fromSides) {
+  if (!window.confetti) return;
+  const C = window.confetti;
+  const burst = (ratio, opts) => C({ ...opts, particleCount: Math.floor(280 * ratio), origin: { y: 0.68 } });
+
+  burst(0.25, { spread: 28, startVelocity: 58, colors:['#ff0080','#ff80c0','#ffd6e7'] });
+  burst(0.20, { spread: 65, colors:['#ffdd00','#00ff88','#00ffcc'] });
+  burst(0.30, { spread: 105, decay: 0.90, scalar: 0.82, colors:['#00f5ff','#8b2be2','#c89fff'] });
+  burst(0.12, { spread: 125, startVelocity: 24, decay: 0.93, scalar: 1.25 });
+  burst(0.13, { spread: 125, startVelocity: 48, colors:['#fff','#ff0080','#00f5ff'] });
+
+  if (fromSides) {
+    setTimeout(() => {
+      C({ particleCount:120, angle:60,  spread:55, origin:{x:0},   colors:['#ff0080','#00f5ff','#ffdd00','#00ff88'] });
+      C({ particleCount:120, angle:120, spread:55, origin:{x:1},   colors:['#00ff88','#8b2be2','#ff80c0','#ffd6e7'] });
+    }, 750);
+  }
+}
+
+// ─── ACTIVATE BUTTON ─────────────────────────────────────────
+function activateSurprise() {
+  fireConfetti(true);
+  const btn = document.getElementById('btn-main');
+  const txt = document.getElementById('btn-txt');
+  btn.disabled = true;
+  txt.textContent = '¡ ¡ A C T I V A D O ! !';
+  setTimeout(() => {
+    txt.textContent = '¡ACTIVAR SORPRESA!';
+    btn.disabled = false;
+  }, 2200);
+}
+
+// ─── PANEL TOGGLES ───────────────────────────────────────────
+const state = { msg: false, gal: false, mis: false };
+const cfg = {
+  msg: { btn:'tb-msg', sw:'sw-msg', panel:'p-msg', ac:'ap', sc:'sp' },
+  gal: { btn:'tb-gal', sw:'sw-gal', panel:'p-gal', ac:'ac', sc:'sc' },
+  mis: { btn:'tb-mis', sw:'sw-mis', panel:'p-mis', ac:'ag', sc:'sg' },
+};
+
+function togglePanel(k) {
+  state[k] = !state[k];
+  const c = cfg[k];
+
+  document.getElementById(c.btn).classList.toggle(c.ac, state[k]);
+  document.getElementById(c.sw).classList.toggle(c.sc, state[k]);
+
+  const panel = document.getElementById(c.panel);
+  if (state[k]) {
+    panel.style.display = 'block';
+    panel.style.animation = 'none';
+    void panel.offsetHeight;
+    panel.style.animation = 'slide-in 0.44s cubic-bezier(0.34,1.56,0.64,1) forwards';
+  } else {
+    panel.style.display = 'none';
+  }
+}
+
+// ─── MISSIONS ────────────────────────────────────────────────
+function toggleMission(el) {
+  el.classList.toggle('done');
+  updateProgress();
+}
+
+function updateProgress() {
+  const items = document.querySelectorAll('.mission-item');
+  const done  = document.querySelectorAll('.mission-item.done').length;
+  const total = items.length;
+  document.getElementById('p-fill').style.width = (done / total * 100) + '%';
+  document.getElementById('p-count').textContent = done + '/' + total;
+  if (done === total) setTimeout(() => fireConfetti(false), 300);
+}
+
+// ─── INITIAL CONFETTI ────────────────────────────────────────
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    if (window.confetti) {
+      window.confetti({
+        particleCount: 90, spread: 75,
+        origin: { y: 0.25 },
+        colors: ['#ff0080','#00f5ff','#ffdd00','#00ff88','#c89fff']
+      });
+    }
+  }, 900);
+});
+</script>
+</body>
+</html>
