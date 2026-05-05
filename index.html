@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SARAH//BIRTHDAY_OS</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.2/confetti.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/catdad/canvas-confetti@1.9.0/dist/confetti.browser.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -744,7 +744,12 @@ setInterval(updateCountdown, 1000);
 
 // ── CONFETTI ──────────────────────────────────────────
 function fireConfetti(sides) {
-  if (!window.confetti) return;
+  if (typeof confetti === 'undefined') {
+    console.warn('Confetti library not loaded yet, retrying...');
+    setTimeout(() => fireConfetti(sides), 300);
+    return;
+  }
+  
   const burst = (ratio, opts) =>
     confetti({ ...opts, particleCount: Math.floor(300 * ratio), origin: { y: 0.65 } });
 
@@ -820,10 +825,10 @@ document.addEventListener('keydown', e => {
 // ── INITIAL CONFETTI ──────────────────────────────────
 window.addEventListener('load', () => {
   setTimeout(() => {
-    if (window.confetti)
+    if (typeof confetti !== 'undefined')
       confetti({ particleCount:80, spread:70, origin:{y:0.2},
                  colors:['#f97316','#fb923c','#fcd34d','#fff','#fed7aa'] });
-  }, 950);
+  }, 500);
 });
 </script>
 </body>
