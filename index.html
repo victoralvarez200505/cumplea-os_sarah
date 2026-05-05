@@ -3,372 +3,353 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎂 Control de Cumpleaños — 30 de Mayo</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <title>SARAH//BIRTHDAY_OS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.2/confetti.browser.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #040810;
-      --cyan: #00f5ff;
-      --pink: #ff0080;
-      --green: #00ff88;
-      --purple: #8b2be2;
+      --bg: #0c0c0a;
+      --card: #111110;
+      --orange: #f97316;
+      --orange-lo: rgba(249,115,22,0.12);
+      --orange-glo: rgba(249,115,22,0.38);
+      --text: #e6e4dc;
+      --muted: rgba(230,228,220,0.38);
+      --bk: 13px; /* bracket size */
+      --bw: 2px;  /* bracket border width */
     }
 
     body {
       font-family: 'Rajdhani', sans-serif;
       background: var(--bg);
-      color: #e2e8f0;
+      color: var(--text);
       min-height: 100vh;
       overflow-x: hidden;
     }
 
-    /* === BACKGROUND === */
-    .bg-grid {
+    /* Subtle warm noise overlay */
+    body::before {
+      content: '';
       position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      background-image: radial-gradient(rgba(0,245,255,0.10) 1px, transparent 1px);
-      background-size: 28px 28px;
+      background:
+        radial-gradient(ellipse 60% 40% at 50% 0%, rgba(249,115,22,0.04), transparent),
+        radial-gradient(ellipse 40% 60% at 0% 80%,  rgba(249,115,22,0.03), transparent);
     }
 
-    .bg-orb {
-      position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
-      filter: blur(90px);
+    /* ── CORNER BRACKET MIXIN ─────────────────────── */
+    .bc { position: relative; }
+
+    .bc::before, .bc::after,
+    .bc > .ci::before, .bc > .ci::after {
+      content: '';
+      position: absolute;
+      width: var(--bk); height: var(--bk);
+      border: var(--bw) solid var(--orange);
     }
-    .orb-1 { width: 520px; height: 420px; top: -8%; left: 28%; background: radial-gradient(ellipse, rgba(255,0,128,0.07), transparent 70%); }
-    .orb-2 { width: 380px; height: 380px; bottom: 5%; right: 0%; background: radial-gradient(ellipse, rgba(0,245,255,0.06), transparent 70%); }
-    .orb-3 { width: 320px; height: 320px; top: 35%; left: -6%; background: radial-gradient(ellipse, rgba(139,43,226,0.06), transparent 70%); }
-    .orb-4 { width: 250px; height: 250px; bottom: 20%; left: 25%; background: radial-gradient(ellipse, rgba(0,255,136,0.04), transparent 70%); }
+    .bc::before  { top:0;    left:0;  border-right:none; border-bottom:none; }
+    .bc::after   { top:0;    right:0; border-left:none;  border-bottom:none; }
+    .bc > .ci    { position: absolute; inset: 0; pointer-events: none; }
+    .bc > .ci::before { bottom:0; left:0;  border-right:none; border-top:none; }
+    .bc > .ci::after  { bottom:0; right:0; border-left:none;  border-top:none; }
 
-    /* Scanline */
-    .scanline {
-      position: fixed; top: -2px; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, transparent, rgba(0,245,255,0.45), transparent);
-      animation: scan 6s linear infinite;
-      pointer-events: none; z-index: 200;
-    }
-
-    /* Floating particles */
-    .particle {
-      position: fixed; width: 2px; height: 2px; border-radius: 50%;
-      pointer-events: none; z-index: 0;
-      animation: drift linear infinite;
-    }
-
-    /* === KEYFRAMES === */
-    @keyframes scan { from { top: -2px; } to { top: 100vh; } }
-
-    @keyframes drift {
-      from { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-      10% { opacity: 1; }
-      90% { opacity: 1; }
-      to { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+    /* ── NAVBAR ───────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      height: 52px;
+      background: rgba(12,12,10,0.94);
+      border-bottom: 1px solid rgba(249,115,22,0.18);
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      backdrop-filter: blur(8px);
     }
 
-    @keyframes float-a {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-9px); }
-    }
-    @keyframes float-b {
-      0%, 100% { transform: translateY(0px) rotate(-1deg); }
-      50% { transform: translateY(-7px) rotate(1deg); }
-    }
+    .nav-left  { display: flex; align-items: center; gap: 10px; }
+    .nav-right { display: flex; align-items: center; gap: 18px;
+                 font-family: 'Share Tech Mono', monospace;
+                 font-size: 10px; color: var(--muted); letter-spacing: 1px; }
 
-    @keyframes pulse-cyan {
-      0%, 100% { box-shadow: 0 0 18px rgba(0,245,255,0.18), 0 0 50px rgba(0,245,255,0.05), inset 0 1px 0 rgba(0,245,255,0.08); }
-      50%       { box-shadow: 0 0 30px rgba(0,245,255,0.30), 0 0 80px rgba(0,245,255,0.12), inset 0 1px 0 rgba(0,245,255,0.15); }
-    }
-    @keyframes pulse-pink {
-      0%, 100% { box-shadow: 0 0 22px rgba(255,0,128,0.32), 0 0 60px rgba(255,0,128,0.10); }
-      50%       { box-shadow: 0 0 44px rgba(255,0,128,0.55), 0 0 100px rgba(255,0,128,0.22); }
+    .nav-icon {
+      width: 30px; height: 30px;
+      border: 1px solid rgba(249,115,22,0.35);
+      border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; flex-shrink: 0;
     }
 
-    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.18; } }
-    @keyframes blink-slow { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.1; } }
+    .nav-brand-text { line-height: 1.2; }
+    .nav-name { font-family: 'Share Tech Mono', monospace; font-size: 13px;
+                color: var(--orange); letter-spacing: 1px; }
+    .nav-sub  { font-family: 'Share Tech Mono', monospace; font-size: 8.5px;
+                color: var(--muted); letter-spacing: 1px; }
 
-    @keyframes slide-in {
-      from { opacity: 0; transform: translateY(24px) scale(0.95); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
+    .nav-sep { width: 1px; height: 20px; background: rgba(249,115,22,0.15); }
+
+    .nav-armed {
+      color: var(--orange);
+      display: flex; align-items: center; gap: 6px;
+      font-weight: 600;
     }
 
-    @keyframes shimmer-btn {
-      0%   { background-position: -300% center; }
-      100% { background-position: 300% center; }
-    }
-
-    @keyframes text-shimmer {
-      0%   { background-position: 0% 50%; }
-      100% { background-position: 200% 50%; }
-    }
-
-    @keyframes spin-hue { from { filter: hue-rotate(0deg); } to { filter: hue-rotate(360deg); } }
-
-    /* === LAYOUT === */
-    .wrap {
-      position: relative; z-index: 1;
-      max-width: 880px; margin: 0 auto;
-      padding: 28px 16px 64px;
-    }
-
-    /* === HEADER === */
-    header { text-align: center; margin-bottom: 40px; }
-
-    .status-pill {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(0,245,255,0.05);
-      border: 1px solid rgba(0,245,255,0.14);
-      border-radius: 100px;
-      padding: 5px 16px;
-      font-family: 'Orbitron', monospace;
-      font-size: 9px; letter-spacing: 3px;
-      color: rgba(0,245,255,0.65);
-      margin-bottom: 18px;
-    }
-
-    .status-dot {
+    .pulse-dot {
       width: 6px; height: 6px; border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 6px var(--green);
-      animation: blink 1.6s ease-in-out infinite;
+      background: var(--orange);
+      box-shadow: 0 0 6px var(--orange);
+      animation: blink 1.4s ease-in-out infinite;
+    }
+
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.12} }
+
+    .hide-sm { display: flex; align-items: center; gap: 18px; }
+
+    /* ── MAIN LAYOUT ──────────────────────────────── */
+    main {
+      position: relative; z-index: 1;
+      max-width: 1080px; margin: 0 auto;
+      padding: 88px 32px 80px;
+    }
+
+    /* ── HERO ─────────────────────────────────────── */
+    .hero { margin-bottom: 52px; }
+
+    .target-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px; letter-spacing: 4px;
+      color: var(--orange); margin-bottom: 14px;
     }
 
     .hero-title {
-      font-family: 'Orbitron', monospace;
-      font-weight: 900;
-      font-size: clamp(30px, 8vw, 60px);
-      line-height: 1.0;
-      background: linear-gradient(135deg, #ffffff 0%, #ffaad4 35%, #c89fff 65%, #00f5ff 100%);
-      background-size: 200% 200%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      animation: text-shimmer 4s linear infinite;
-      margin-bottom: 10px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(58px, 10vw, 116px);
+      line-height: 0.88;
+      color: var(--text);
+      margin-bottom: 22px;
     }
+    .hero-title .o { color: var(--orange); }
 
-    .hero-sub {
-      font-family: 'Orbitron', monospace;
-      font-size: 11px; letter-spacing: 3px;
-      color: rgba(226,232,240,0.32);
+    .hero-desc {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12.5px; color: var(--muted);
+      line-height: 1.75; max-width: 500px;
     }
+    .hero-desc span { color: var(--orange); }
 
-    /* === SECTION LABEL === */
-    .sec-label {
-      font-family: 'Orbitron', monospace;
-      font-size: 8px; letter-spacing: 3px;
-      color: rgba(255,255,255,0.2);
-      margin-bottom: 12px;
-    }
-
-    /* === COUNTDOWN === */
-    .countdown-grid {
+    /* ── COUNTDOWN ────────────────────────────────── */
+    .cd-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-bottom: 36px;
+      gap: 12px;
+      margin-bottom: 44px;
     }
 
     .digit-card {
-      background: linear-gradient(160deg, rgba(0,18,44,0.82) 0%, rgba(0,8,24,0.92) 100%);
-      border: 1px solid rgba(0,245,255,0.14);
-      border-radius: 20px;
-      padding: 22px 8px 18px;
+      background: var(--card);
+      padding: 18px 10px 20px;
       text-align: center;
-      position: relative;
-      overflow: hidden;
-      animation: float-a 3.6s ease-in-out infinite, pulse-cyan 3s ease-in-out infinite;
-    }
-
-    .digit-card:nth-child(2) { animation-delay: 0.25s, 0.4s; }
-    .digit-card:nth-child(3) { animation-delay: 0.5s, 0.8s; }
-    .digit-card:nth-child(4) { animation-delay: 0.75s, 1.2s; }
-
-    .digit-card::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(0,245,255,0.7), transparent);
-    }
-
-    .digit-card::after {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse at 50% -10%, rgba(0,245,255,0.09) 0%, transparent 65%);
-      pointer-events: none;
-    }
-
-    .dv {
-      font-family: 'Orbitron', monospace;
-      font-weight: 900;
-      font-size: clamp(32px, 9vw, 56px);
-      color: var(--cyan);
-      text-shadow: 0 0 22px rgba(0,245,255,0.55), 0 0 50px rgba(0,245,255,0.2);
-      line-height: 1; display: block;
     }
 
     .dl {
-      font-family: 'Orbitron', monospace;
-      font-size: 8px; letter-spacing: 2px;
-      color: rgba(0,245,255,0.38);
-      margin-top: 10px; display: block;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9px; letter-spacing: 3px;
+      color: var(--muted);
+      display: block; margin-bottom: 10px;
     }
 
-    /* === MAIN BUTTON === */
-    .btn-wrap { text-align: center; margin-bottom: 44px; }
+    .dv {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(44px, 9vw, 76px);
+      color: var(--orange);
+      text-shadow: 0 0 22px var(--orange-glo), 0 0 55px rgba(249,115,22,0.14);
+      line-height: 1; display: block;
+    }
+
+    /* ── ACTIVATE BUTTON ──────────────────────────── */
+    .btn-section { text-align: center; margin-bottom: 56px; }
 
     .btn-activate {
-      position: relative;
-      background: linear-gradient(135deg, #ff0080 0%, #8b2be2 100%);
-      border: none;
-      border-radius: 50px;
-      padding: 19px 48px;
-      color: #fff;
-      font-family: 'Orbitron', monospace;
-      font-weight: 700;
-      font-size: clamp(12px, 3.2vw, 17px);
-      letter-spacing: 2.5px;
+      background: var(--orange);
+      border: none; border-radius: 50px;
+      padding: 17px 52px;
+      color: #0c0c0a;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700; font-size: 18px; letter-spacing: 3.5px;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 14px;
-      animation: pulse-pink 2.6s ease-in-out infinite;
-      transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), letter-spacing 0.35s;
-      overflow: hidden;
+      display: inline-flex; align-items: center; gap: 12px;
+      box-shadow: 0 0 32px var(--orange-glo), 0 0 80px rgba(249,115,22,0.10);
+      transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s;
+      position: relative; overflow: hidden;
       -webkit-appearance: none;
-    }
-
-    .btn-activate::before {
-      content: '';
-      position: absolute; inset: -2px;
-      background: linear-gradient(135deg, #ff0080, #8b2be2, #00f5ff, #ff0080);
-      background-size: 400%;
-      border-radius: 52px;
-      z-index: -1;
-      animation: shimmer-btn 3.5s linear infinite;
     }
 
     .btn-activate::after {
       content: '';
-      position: absolute;
-      top: 0; left: -100%; width: 100%; height: 100%;
+      position: absolute; top: 0; left: -100%;
+      width: 100%; height: 100%;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
-      transition: left 0.55s ease;
+      transition: left 0.5s;
     }
 
-    .btn-activate:hover  { transform: scale(1.07); letter-spacing: 4px; }
+    .btn-activate:hover {
+      transform: scale(1.06);
+      box-shadow: 0 0 55px var(--orange-glo), 0 0 120px rgba(249,115,22,0.18);
+    }
     .btn-activate:hover::after { left: 100%; }
-    .btn-activate:active { transform: scale(0.96); }
+    .btn-activate:active { transform: scale(0.97); }
 
-    .btn-icon { font-size: 20px; }
+    .btn-enter {
+      font-size: 11px; font-weight: 400;
+      opacity: 0.7; letter-spacing: 2px;
+    }
 
-    /* === TOGGLES === */
-    .toggles-grid {
+    .btn-hint {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9.5px; letter-spacing: 3.5px;
+      color: var(--muted); margin-top: 12px;
+    }
+
+    /* ── MODULE CARDS ─────────────────────────────── */
+    .modules-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 20px;
+      gap: 12px;
+      margin-bottom: 16px;
     }
 
-    .toggle-btn {
-      background: rgba(255,255,255,0.025);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 18px;
-      padding: 16px 10px 14px;
+    .module-card {
+      background: var(--card);
+      padding: 16px 18px;
+      display: flex; align-items: center; gap: 14px;
       cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      transition: all 0.3s ease, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
-      -webkit-appearance: none;
+      transition: background 0.3s ease;
+      user-select: none;
     }
 
-    .toggle-btn:hover { transform: translateY(-3px); }
+    .module-card:hover   { background: rgba(249,115,22,0.04); }
+    .module-card.active  { background: rgba(249,115,22,0.07); }
 
-    .toggle-btn.ap { border-color: rgba(255,0,128,0.38); background: rgba(255,0,128,0.07); box-shadow: 0 0 22px rgba(255,0,128,0.14); }
-    .toggle-btn.ac { border-color: rgba(0,245,255,0.38); background: rgba(0,245,255,0.07); box-shadow: 0 0 22px rgba(0,245,255,0.14); }
-    .toggle-btn.ag { border-color: rgba(0,255,136,0.38); background: rgba(0,255,136,0.07); box-shadow: 0 0 22px rgba(0,255,136,0.14); }
-
-    .t-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
+    .mod-icon {
+      width: 40px; height: 40px;
+      border: 1px solid rgba(249,115,22,0.28);
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; flex-shrink: 0;
+      transition: all 0.3s;
+    }
+    .module-card.active .mod-icon {
+      border-color: var(--orange);
+      background: var(--orange-lo);
+      box-shadow: 0 0 12px rgba(249,115,22,0.2);
     }
 
-    .t-icon { font-size: 18px; }
+    .mod-body { flex: 1; min-width: 0; }
 
-    .sw {
-      width: 38px; height: 21px;
-      border-radius: 10.5px;
-      background: rgba(255,255,255,0.08);
-      padding: 2.5px;
-      display: flex; align-items: center;
-      justify-content: flex-start;
-      transition: all 0.35s cubic-bezier(0.68,-0.55,0.27,1.55);
+    .mod-code {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 8.5px; color: var(--orange);
+      letter-spacing: 2px; margin-bottom: 3px;
+    }
+
+    .mod-name {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700; font-size: 17px;
+      letter-spacing: 0.5px; color: var(--text);
+      display: block; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+
+    .mod-status {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 8.5px; color: var(--muted);
+      letter-spacing: 1px; margin-top: 3px;
+      display: flex; align-items: center; gap: 5px;
+    }
+
+    .status-dot-sm {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--muted); flex-shrink: 0;
+      transition: all 0.3s;
+    }
+    .module-card.active .status-dot-sm {
+      background: var(--orange);
+      box-shadow: 0 0 5px var(--orange);
+      animation: blink 1.4s ease-in-out infinite;
+    }
+
+    /* Toggle switch */
+    .sw-track {
+      width: 44px; height: 24px; border-radius: 12px;
+      background: rgba(255,255,255,0.07);
+      padding: 3px;
+      display: flex; align-items: center; justify-content: flex-start;
+      transition: all 0.38s cubic-bezier(0.68,-0.55,0.27,1.55);
       flex-shrink: 0;
     }
-
-    .sw.sp { background: var(--pink); justify-content: flex-end; }
-    .sw.sc { background: var(--cyan); justify-content: flex-end; }
-    .sw.sg { background: var(--green); justify-content: flex-end; }
+    .sw-track.on { background: var(--orange); justify-content: flex-end; }
 
     .sw-thumb {
-      width: 16px; height: 16px; border-radius: 50%;
-      background: white;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: #fff;
       box-shadow: 0 1px 4px rgba(0,0,0,0.45);
+    }
+
+    /* ── PANELS ───────────────────────────────────── */
+    .panel {
+      background: var(--card);
+      padding: 26px 28px;
+      margin-bottom: 12px;
+      animation: slide-in 0.44s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    }
+
+    @keyframes slide-in {
+      from { opacity:0; transform:translateY(18px) scale(0.97); }
+      to   { opacity:1; transform:translateY(0)    scale(1); }
+    }
+
+    .panel-hdr {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px; letter-spacing: 3px;
+      color: var(--orange);
+      margin-bottom: 22px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(249,115,22,0.14);
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .panel-hdr::before {
+      content: '';
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--orange);
+      box-shadow: 0 0 8px var(--orange);
+      animation: blink 1.2s ease-in-out infinite;
       flex-shrink: 0;
     }
 
-    .t-lbl {
-      font-family: 'Orbitron', monospace;
-      font-size: 8.5px; letter-spacing: 0.5px;
-      text-align: center; line-height: 1.4;
-      color: rgba(226,232,240,0.4);
-      transition: color 0.3s;
-    }
+    /* Message */
+    .msg-body { text-align: center; }
 
-    .toggle-btn.ap .t-lbl { color: rgba(255,0,128,0.85); }
-    .toggle-btn.ac .t-lbl { color: rgba(0,245,255,0.85); }
-    .toggle-btn.ag .t-lbl { color: rgba(0,255,136,0.85); }
+    .msg-emoji-big { font-size: 44px; margin-bottom: 18px; }
 
-    /* === PANELS === */
-    .panel {
-      border-radius: 22px;
-      padding: 26px;
-      margin-bottom: 12px;
-      animation: slide-in 0.42s cubic-bezier(0.34,1.56,0.64,1) forwards;
-    }
-
-    .panel-pink  { background: rgba(255,0,128,0.05);  border: 1px solid rgba(255,0,128,0.18); }
-    .panel-cyan  { background: rgba(0,245,255,0.04);  border: 1px solid rgba(0,245,255,0.16); }
-    .panel-green { background: rgba(0,255,136,0.04);  border: 1px solid rgba(0,255,136,0.16); }
-
-    .panel-title {
-      font-family: 'Orbitron', monospace;
-      font-size: 11px; letter-spacing: 3px;
-      text-align: center;
-      margin-bottom: 22px;
-    }
-
-    /* --- Message --- */
     .msg-text {
-      font-size: 16px; line-height: 1.95;
-      text-align: center; color: rgba(230,220,245,0.88);
+      font-size: 16.5px; line-height: 1.95;
+      color: rgba(230,228,220,0.82);
       max-width: 520px; margin: 0 auto 22px;
     }
 
-    .emoji-row { display: flex; justify-content: center; gap: 14px; }
+    .emoji-row { display: flex; justify-content: center; gap: 16px; }
     .emoji-row span {
-      font-size: 22px; display: inline-block;
-      animation: float-b 2.8s ease-in-out infinite;
+      font-size: 24px; display: inline-block;
+      animation: floaty 3s ease-in-out infinite;
     }
-    .emoji-row span:nth-child(2) { animation-delay: 0.45s; }
-    .emoji-row span:nth-child(3) { animation-delay: 0.9s; }
-    .emoji-row span:nth-child(4) { animation-delay: 1.35s; }
-    .emoji-row span:nth-child(5) { animation-delay: 1.8s; }
+    .emoji-row span:nth-child(2){animation-delay:.5s}
+    .emoji-row span:nth-child(3){animation-delay:1s}
+    .emoji-row span:nth-child(4){animation-delay:1.5s}
+    .emoji-row span:nth-child(5){animation-delay:2s}
 
-    /* --- Gallery --- */
+    @keyframes floaty { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-9px)} }
+
+    /* Gallery */
     .gallery-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -376,293 +357,315 @@
     }
 
     .photo-card {
-      border-radius: 13px; overflow: hidden;
-      aspect-ratio: 1;
-      border: 2px solid rgba(0,245,255,0.14);
-      transition: transform 0.38s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.38s ease;
-      position: relative; cursor: pointer;
+      overflow: hidden; aspect-ratio: 1;
+      border: 1px solid rgba(249,115,22,0.14);
+      border-radius: 3px;
+      transition: transform 0.38s cubic-bezier(0.34,1.56,0.64,1), border-color 0.3s, box-shadow 0.3s;
+      cursor: pointer; position: relative;
     }
-
-    .photo-card:nth-child(1) { transform: rotate(-2.5deg); }
-    .photo-card:nth-child(2) { transform: rotate(1.8deg); }
-    .photo-card:nth-child(3) { transform: rotate(-1.2deg); }
-    .photo-card:nth-child(4) { transform: rotate(2.2deg); }
-    .photo-card:nth-child(5) { transform: rotate(-1.8deg); }
-    .photo-card:nth-child(6) { transform: rotate(2.8deg); }
+    .photo-card:nth-child(1){transform:rotate(-2deg)}
+    .photo-card:nth-child(2){transform:rotate(1.8deg)}
+    .photo-card:nth-child(3){transform:rotate(-1deg)}
+    .photo-card:nth-child(4){transform:rotate(2.2deg)}
+    .photo-card:nth-child(5){transform:rotate(-1.5deg)}
+    .photo-card:nth-child(6){transform:rotate(2.5deg)}
 
     .photo-card:hover {
-      transform: rotate(0deg) scale(1.09) !important;
-      z-index: 10;
-      box-shadow: 0 20px 50px rgba(0,245,255,0.22);
+      transform: rotate(0) scale(1.08) !important;
+      z-index: 10; border-color: var(--orange);
+      box-shadow: 0 14px 40px rgba(249,115,22,0.22);
     }
+    .photo-card img { width:100%; height:100%; object-fit:cover; display:block; }
 
-    .photo-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-    .photo-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(to bottom, transparent 60%, rgba(0,10,30,0.7) 100%);
-      pointer-events: none;
-    }
-
-    .gallery-lbl {
-      text-align: center;
-      font-family: 'Orbitron', monospace;
+    .gallery-footer {
+      font-family: 'Share Tech Mono', monospace;
       font-size: 8.5px; letter-spacing: 3px;
-      color: rgba(0,245,255,0.28);
-      margin-top: 15px;
+      color: var(--muted); text-align: center;
+      margin-top: 14px;
     }
 
-    /* --- Missions --- */
+    /* Missions */
     .mission-item {
       display: flex; align-items: center; gap: 12px;
-      background: rgba(255,255,255,0.025);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 13px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-left: 2px solid transparent;
       padding: 14px 16px;
       cursor: pointer;
       transition: all 0.3s ease;
-      margin-bottom: 9px;
+      margin-bottom: 8px;
       user-select: none;
     }
+    .mission-item:hover { background:var(--orange-lo); border-left-color:rgba(249,115,22,0.4); }
+    .mission-item.done  { background:rgba(249,115,22,0.07); border-left-color:var(--orange); }
 
-    .mission-item:hover   { transform: translateX(5px); background: rgba(0,255,136,0.05); border-color: rgba(0,255,136,0.12); }
-    .mission-item.done    { background: rgba(0,255,136,0.08); border-color: rgba(0,255,136,0.24); }
-
-    .m-emoji { font-size: 22px; flex-shrink: 0; }
+    .m-emoji { font-size: 20px; flex-shrink:0; }
 
     .m-text {
-      flex: 1; font-size: 14.5px;
-      color: rgba(226,232,240,0.88);
-      transition: all 0.3s;
+      flex:1; font-size: 14.5px;
+      color: rgba(230,228,220,0.85); transition: all 0.3s;
     }
-
-    .mission-item.done .m-text {
-      text-decoration: line-through;
-      color: rgba(0,255,136,0.45);
-    }
+    .mission-item.done .m-text { text-decoration:line-through; color:rgba(249,115,22,0.45); }
 
     .m-xp {
-      font-family: 'Orbitron', monospace; font-size: 9.5px;
-      color: var(--green);
-      background: rgba(0,255,136,0.09);
-      border: 1px solid rgba(0,255,136,0.14);
-      padding: 4px 9px; border-radius: 8px;
-      flex-shrink: 0;
+      font-family: 'Share Tech Mono', monospace; font-size: 9.5px;
+      color: var(--orange);
+      background: rgba(249,115,22,0.08);
+      border: 1px solid rgba(249,115,22,0.18);
+      padding: 3px 9px; flex-shrink:0;
     }
 
     .m-check {
-      width: 22px; height: 22px; border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.14);
+      width: 22px; height: 22px;
+      border: 2px solid rgba(255,255,255,0.12);
+      border-radius: 2px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 12px; flex-shrink: 0;
-      transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
-      color: transparent;
+      font-size: 13px; font-weight: 700;
+      flex-shrink: 0; transition: all 0.3s; color: transparent;
     }
-
     .mission-item.done .m-check {
-      background: var(--green);
-      border-color: var(--green);
-      box-shadow: 0 0 12px rgba(0,255,136,0.45);
-      color: #04201a;
+      background: var(--orange); border-color: var(--orange);
+      color: #0c0c0a; box-shadow: 0 0 10px rgba(249,115,22,0.4);
     }
 
-    /* Progress */
-    .progress-wrap {
-      margin-top: 18px;
-      background: rgba(0,255,136,0.05);
-      border: 1px solid rgba(0,255,136,0.1);
-      border-radius: 12px;
-      padding: 12px 16px;
-      display: flex; align-items: center; gap: 14px;
+    /* Progress bar */
+    .prog-row {
+      margin-top: 18px; display: flex; align-items: center; gap: 14px;
     }
-
     .p-lbl {
-      font-family: 'Orbitron', monospace;
-      font-size: 9px; letter-spacing: 2.5px;
-      color: rgba(0,255,136,0.55); flex-shrink: 0;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 8.5px; letter-spacing: 2.5px;
+      color: var(--muted); flex-shrink:0;
     }
-
-    .p-bar {
-      flex: 1; height: 5px;
-      background: rgba(255,255,255,0.07);
-      border-radius: 3px; overflow: hidden;
-    }
-
+    .p-bar { flex:1; height: 3px; background:rgba(255,255,255,0.07); }
     .p-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--green), #00ffcc);
-      border-radius: 3px;
-      box-shadow: 0 0 10px rgba(0,255,136,0.65);
-      transition: width 0.55s cubic-bezier(0.34,1.56,0.64,1);
+      height: 100%; background: var(--orange);
+      box-shadow: 0 0 8px var(--orange-glo);
+      transition: width 0.55s ease;
     }
-
     .p-count {
-      font-family: 'Orbitron', monospace;
-      font-size: 11px; color: var(--green);
-      flex-shrink: 0;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px; color: var(--orange); flex-shrink:0;
     }
 
-    /* === FOOTER === */
+    /* ── FOOTER ───────────────────────────────────── */
     footer {
-      text-align: center;
-      padding-top: 28px;
-      border-top: 1px solid rgba(255,255,255,0.045);
-      margin-top: 10px;
+      position: relative; z-index: 1;
+      border-top: 1px solid rgba(249,115,22,0.12);
+      padding: 18px 32px;
+      display: flex; justify-content: space-between; align-items: center;
+      max-width: 1080px; margin: 0 auto;
     }
 
-    footer p {
-      font-family: 'Orbitron', monospace;
-      font-size: 8.5px; letter-spacing: 3px;
-      color: rgba(255,255,255,0.12);
+    .f-log {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9.5px; letter-spacing: 2px;
+      color: rgba(230,228,220,0.18);
     }
 
-    /* === RESPONSIVE === */
-    @media (max-width: 500px) {
-      .countdown-grid { gap: 7px; }
-      .toggles-grid   { gap: 7px; }
-      .gallery-grid   { grid-template-columns: repeat(2, 1fr); }
-      .btn-activate   { padding: 16px 28px; gap: 10px; }
-      .panel          { padding: 18px 14px; }
-      .hero-title     { font-size: clamp(26px, 10vw, 44px); }
-      .t-lbl          { font-size: 7.5px; }
+    .f-eot {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9.5px; letter-spacing: 2px;
+      color: var(--orange);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .cursor-blink {
+      display: inline-block; width: 8px; height: 14px;
+      background: var(--orange);
+      animation: blink 1s step-end infinite;
+    }
+
+    /* ── RESPONSIVE ───────────────────────────────── */
+    @media (max-width: 860px) {
+      .modules-grid { grid-template-columns: 1fr; }
+      .hide-sm { display: none !important; }
+    }
+
+    @media (max-width: 600px) {
+      main { padding: 76px 14px 60px; }
+      nav  { padding: 0 14px; }
+
+      .nav-name { font-size: 11px; }
+      .nav-sub  { font-size: 7.5px; }
+
+      .hero { margin-bottom: 36px; }
+      .hero-title { font-size: clamp(52px, 14vw, 90px); }
+
+      .cd-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .digit-card { padding: 14px 8px 16px; }
+
+      .btn-activate { padding: 14px 28px; font-size: 15px; letter-spacing: 2.5px; gap: 8px; }
+
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+
+      .panel { padding: 18px 16px; }
+
+      footer { padding: 14px 14px; flex-direction: column; gap: 8px; text-align: center; }
+      .f-log, .f-eot { font-size: 8px; }
+    }
+
+    @media (max-width: 380px) {
+      .cd-grid { gap: 6px; }
+      .mod-name { font-size: 15px; }
     }
   </style>
 </head>
 <body>
 
-<!-- Backgrounds -->
-<div class="bg-grid"></div>
-<div class="bg-orb orb-1"></div>
-<div class="bg-orb orb-2"></div>
-<div class="bg-orb orb-3"></div>
-<div class="bg-orb orb-4"></div>
-<div class="scanline"></div>
-
-<!-- Floating particles -->
-<div id="particles"></div>
-
-<div class="wrap">
-
-  <!-- HEADER -->
-  <header>
-    <div class="status-pill">
-      <span class="status-dot"></span>
-      SISTEMA ACTIVO — MISIÓN CUMPLEAÑOS
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-left">
+    <div class="nav-icon">⚙️</div>
+    <div class="nav-brand-text">
+      <div class="nav-name">SARAH//BIRTHDAY_OS</div>
+      <div class="nav-sub">v2.4.0 · MAY_30 · MISSION CONTROL</div>
     </div>
-    <h1 class="hero-title">CONTROL DE<br>CUMPLEAÑOS</h1>
-    <p class="hero-sub">◈ Objetivo: 30 de Mayo ◈</p>
-  </header>
+  </div>
+  <div class="nav-right">
+    <div class="hide-sm">
+      <span>⚡ UPLINK</span>
+      <div class="nav-sep"></div>
+      <span>🔋 98%</span>
+      <div class="nav-sep"></div>
+      <span id="nav-clock">—</span>
+    </div>
+    <div class="nav-sep hide-sm"></div>
+    <div class="nav-armed">
+      <div class="pulse-dot"></div>
+      SYSTEM: ARMED
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <p class="target-label">::: TARGET ACQUIRED :::</p>
+    <h1 class="hero-title">
+      CUENTA REGRESIVA<br>
+      <span class="o">PARA SARAH.</span>
+    </h1>
+    <p class="hero-desc">
+      <span>&gt;</span> Sistema de celebración inicializado. Todos los protocolos de
+      cumpleaños están en línea. Activa los módulos cuando estés listo,
+      comandante.
+    </p>
+  </section>
 
   <!-- COUNTDOWN -->
-  <p class="sec-label">[ TIEMPO RESTANTE PARA DETONACIÓN ]</p>
-  <div class="countdown-grid">
-    <div class="digit-card">
-      <span class="dv" id="days">00</span>
+  <div class="cd-grid">
+    <div class="bc digit-card"><div class="ci"></div>
       <span class="dl">DÍAS</span>
+      <span class="dv" id="days">00</span>
     </div>
-    <div class="digit-card">
-      <span class="dv" id="hours">00</span>
+    <div class="bc digit-card"><div class="ci"></div>
       <span class="dl">HORAS</span>
+      <span class="dv" id="hours">00</span>
     </div>
-    <div class="digit-card">
+    <div class="bc digit-card"><div class="ci"></div>
+      <span class="dl">MIN</span>
       <span class="dv" id="minutes">00</span>
-      <span class="dl">MINUTOS</span>
     </div>
-    <div class="digit-card">
-      <span class="dv" id="seconds">00</span>
+    <div class="bc digit-card"><div class="ci"></div>
       <span class="dl">SEG</span>
+      <span class="dv" id="seconds">00</span>
     </div>
   </div>
 
-  <!-- ACTIVATE BUTTON -->
-  <div class="btn-wrap">
+  <!-- BUTTON -->
+  <div class="btn-section">
     <button class="btn-activate" id="btn-main" onclick="activateSurprise()">
-      <span class="btn-icon">⚡</span>
+      <span>🎉</span>
       <span id="btn-txt">¡ACTIVAR SORPRESA!</span>
-      <span class="btn-icon">⚡</span>
+      <span class="btn-enter">[ENTER]</span>
     </button>
+    <p class="btn-hint">PRESIONA PARA DETONAR EL PROTOCOLO DE FIESTA</p>
   </div>
 
-  <!-- TOGGLES -->
-  <p class="sec-label">[ MÓDULOS DE MISIÓN ]</p>
-  <div class="toggles-grid">
-    <button class="toggle-btn" id="tb-msg" onclick="togglePanel('msg')">
-      <div class="t-top">
-        <span class="t-icon">💌</span>
-        <div class="sw" id="sw-msg"><div class="sw-thumb"></div></div>
-      </div>
-      <span class="t-lbl">MENSAJE<br>ESPECIAL</span>
-    </button>
+  <!-- MODULES -->
+  <div class="modules-grid">
 
-    <button class="toggle-btn" id="tb-gal" onclick="togglePanel('gal')">
-      <div class="t-top">
-        <span class="t-icon">📷</span>
-        <div class="sw" id="sw-gal"><div class="sw-thumb"></div></div>
+    <div class="bc module-card" id="mc-msg" onclick="togglePanel('msg')"><div class="ci"></div>
+      <div class="mod-icon" id="ic-msg">📡</div>
+      <div class="mod-body">
+        <div class="mod-code">MOD_01 · CIPHER</div>
+        <span class="mod-name">MENSAJE SEGURO</span>
+        <div class="mod-status">
+          <span class="status-dot-sm" id="dot-msg"></span>
+          <span id="st-msg">STANDBY</span>
+        </div>
       </div>
-      <span class="t-lbl">GALERÍA<br>FOTOGRÁFICA</span>
-    </button>
+      <div class="sw-track" id="sw-msg"><div class="sw-thumb"></div></div>
+    </div>
 
-    <button class="toggle-btn" id="tb-mis" onclick="togglePanel('mis')">
-      <div class="t-top">
-        <span class="t-icon">🎯</span>
-        <div class="sw" id="sw-mis"><div class="sw-thumb"></div></div>
+    <div class="bc module-card" id="mc-gal" onclick="togglePanel('gal')"><div class="ci"></div>
+      <div class="mod-icon" id="ic-gal">✨</div>
+      <div class="mod-body">
+        <div class="mod-code">MOD_02 · GALLERY</div>
+        <span class="mod-name">MEDIA UPLINK</span>
+        <div class="mod-status">
+          <span class="status-dot-sm" id="dot-gal"></span>
+          <span id="st-gal">STANDBY</span>
+        </div>
       </div>
-      <span class="t-lbl">MISIONES DE<br>CUMPLEAÑOS</span>
-    </button>
-  </div>
+      <div class="sw-track" id="sw-gal"><div class="sw-thumb"></div></div>
+    </div>
+
+    <div class="bc module-card" id="mc-mis" onclick="togglePanel('mis')"><div class="ci"></div>
+      <div class="mod-icon" id="ic-mis">⚡</div>
+      <div class="mod-body">
+        <div class="mod-code">MOD_03 · TASK FORCE</div>
+        <span class="mod-name">MISSION LOGS</span>
+        <div class="mod-status">
+          <span class="status-dot-sm" id="dot-mis"></span>
+          <span id="st-mis">STANDBY</span>
+        </div>
+      </div>
+      <div class="sw-track" id="sw-mis"><div class="sw-thumb"></div></div>
+    </div>
+
+  </div><!-- /modules -->
 
   <!-- PANELS AREA -->
   <div id="panels-area">
 
-    <!-- MESSAGE PANEL -->
-    <div id="p-msg" class="panel panel-pink" style="display:none">
-      <p class="panel-title" style="color:#ff80c0">◈ MENSAJE TRANSMITIDO ◈</p>
-      <div style="text-align:center;font-size:40px;margin-bottom:18px">🎂</div>
-      <p class="msg-text">
-        En este día especial, el universo entero conspira para recordarte lo increíble que eres.
-        Que este año esté lleno de aventuras inesperadas, risas que duelan el estómago y momentos
-        que se conviertan en tus mejores recuerdos. ¡Feliz cumpleaños, que lo celebres a lo grande! 🌟
-      </p>
-      <div class="emoji-row">
-        <span>💫</span><span>🌸</span><span>✨</span><span>🎉</span><span>💖</span>
+    <!-- MESSAGE -->
+    <div id="p-msg" class="bc panel" style="display:none"><div class="ci"></div>
+      <div class="panel-hdr">:: MOD_01 TRANSMISIÓN ACTIVA ::</div>
+      <div class="msg-body">
+        <div class="msg-emoji-big">🎂</div>
+        <p class="msg-text">
+          En este día especial, el universo entero conspira para recordarte
+          lo increíble que eres. Que este año esté lleno de aventuras inesperadas,
+          risas que duelan el estómago y momentos que se conviertan en tus
+          mejores recuerdos. ¡Feliz cumpleaños, que lo celebres a lo grande! 🌟
+        </p>
+        <div class="emoji-row">
+          <span>💫</span><span>🌸</span><span>✨</span><span>🎉</span><span>💖</span>
+        </div>
       </div>
     </div>
 
-    <!-- GALLERY PANEL -->
-    <div id="p-gal" class="panel panel-cyan" style="display:none">
-      <p class="panel-title" style="color:var(--cyan)">◈ GALERÍA DE MOMENTOS ◈</p>
+    <!-- GALLERY -->
+    <div id="p-gal" class="bc panel" style="display:none"><div class="ci"></div>
+      <div class="panel-hdr">:: MOD_02 MEDIA UPLINK — ARCHIVOS CLASIFICADOS ::</div>
       <div class="gallery-grid">
-        <div class="photo-card">
-          <img src="https://picsum.photos/seed/bday01/300/300" alt="Momento 1" loading="lazy">
-          <div class="photo-overlay"></div>
-        </div>
-        <div class="photo-card">
-          <img src="https://picsum.photos/seed/bday02/300/300" alt="Momento 2" loading="lazy">
-          <div class="photo-overlay"></div>
-        </div>
-        <div class="photo-card">
-          <img src="https://picsum.photos/seed/bday03/300/300" alt="Momento 3" loading="lazy">
-          <div class="photo-overlay"></div>
-        </div>
-        <div class="photo-card">
-          <img src="https://picsum.photos/seed/bday04/300/300" alt="Momento 4" loading="lazy">
-          <div class="photo-overlay"></div>
-        </div>
-        <div class="photo-card">
-          <img src="https://picsum.photos/seed/bday05/300/300" alt="Momento 5" loading="lazy">
-          <div class="photo-overlay"></div>
-        </div>
-        <div class="photo-card">
-          <img src="https://picsum.photos/seed/bday06/300/300" alt="Momento 6" loading="lazy">
-          <div class="photo-overlay"></div>
-        </div>
+        <div class="photo-card"><img src="https://picsum.photos/seed/sb01/300/300" alt="Momento 1" loading="lazy"></div>
+        <div class="photo-card"><img src="https://picsum.photos/seed/sb02/300/300" alt="Momento 2" loading="lazy"></div>
+        <div class="photo-card"><img src="https://picsum.photos/seed/sb03/300/300" alt="Momento 3" loading="lazy"></div>
+        <div class="photo-card"><img src="https://picsum.photos/seed/sb04/300/300" alt="Momento 4" loading="lazy"></div>
+        <div class="photo-card"><img src="https://picsum.photos/seed/sb05/300/300" alt="Momento 5" loading="lazy"></div>
+        <div class="photo-card"><img src="https://picsum.photos/seed/sb06/300/300" alt="Momento 6" loading="lazy"></div>
       </div>
-      <p class="gallery-lbl">RECUERDOS CLASIFICADOS — NIVEL MÁXIMO</p>
+      <p class="gallery-footer">RECUERDOS_CLASIFICADOS :: ACCESO_NIVEL_MÁXIMO</p>
     </div>
 
-    <!-- MISSIONS PANEL -->
-    <div id="p-mis" class="panel panel-green" style="display:none">
-      <p class="panel-title" style="color:var(--green)">◈ MISIONES DE CUMPLEAÑOS ◈</p>
+    <!-- MISSIONS -->
+    <div id="p-mis" class="bc panel" style="display:none"><div class="ci"></div>
+      <div class="panel-hdr">:: MOD_03 MISSION LOGS — OBJETIVOS ACTIVOS ::</div>
 
       <div class="mission-item" onclick="toggleMission(this)">
         <span class="m-emoji">🎂</span>
@@ -695,7 +698,7 @@
         <div class="m-check">✓</div>
       </div>
 
-      <div class="progress-wrap">
+      <div class="prog-row">
         <span class="p-lbl">PROGRESO</span>
         <div class="p-bar"><div class="p-fill" id="p-fill" style="width:0%"></div></div>
         <span class="p-count" id="p-count">0/5</span>
@@ -704,41 +707,32 @@
 
   </div><!-- /panels-area -->
 
-  <footer>
-    <p>SISTEMA v1.0 ◈ CLASIFICADO: ESPECIAL ◈ MISIÓN: 30.MAY ◈ TODOS LOS SISTEMAS LISTOS</p>
-  </footer>
+</main>
 
-</div><!-- /wrap -->
+<!-- FOOTER -->
+<footer>
+  <span class="f-log">:: LOG: BIRTHDAY_OS :: BUILD_2026 :: FOR_SARAH :: WITH_LOVE</span>
+  <span class="f-eot">END_OF_TRANSMISSION <span class="cursor-blink"></span></span>
+</footer>
 
 <script>
-// ─── PARTICLES ───────────────────────────────────────────────
-(function spawnParticles() {
-  const colors = ['#00f5ff','#ff0080','#00ff88','#8b2be2','#ffdd00'];
-  const container = document.getElementById('particles');
-  for (let i = 0; i < 22; i++) {
-    const el = document.createElement('div');
-    el.className = 'particle';
-    const col = colors[Math.floor(Math.random() * colors.length)];
-    const size = Math.random() * 2 + 1;
-    el.style.cssText = `
-      left:${Math.random()*100}vw;
-      width:${size}px; height:${size}px;
-      background:${col};
-      box-shadow:0 0 ${size*3}px ${col};
-      animation-duration:${8 + Math.random()*14}s;
-      animation-delay:${Math.random()*12}s;
-    `;
-    container.appendChild(el);
-  }
-})();
+// ── CLOCK ──────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  const str = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())} UTC`;
+  const el = document.getElementById('nav-clock');
+  if (el) el.textContent = str;
+}
+updateClock();
+setInterval(updateClock, 1000);
 
-// ─── COUNTDOWN ───────────────────────────────────────────────
+// ── COUNTDOWN ─────────────────────────────────────────
 function updateCountdown() {
   const now = new Date();
   const target = new Date(now.getFullYear(), 4, 30, 0, 0, 0);
   if (now >= target) target.setFullYear(target.getFullYear() + 1);
   const diff = target - now;
-
   const pad = n => String(Math.floor(n)).padStart(2,'0');
   document.getElementById('days').textContent    = pad(diff / 86400000);
   document.getElementById('hours').textContent   = pad((diff % 86400000) / 3600000);
@@ -748,91 +742,88 @@ function updateCountdown() {
 updateCountdown();
 setInterval(updateCountdown, 1000);
 
-// ─── CONFETTI ────────────────────────────────────────────────
-function fireConfetti(fromSides) {
+// ── CONFETTI ──────────────────────────────────────────
+function fireConfetti(sides) {
   if (!window.confetti) return;
-  const C = window.confetti;
-  const burst = (ratio, opts) => C({ ...opts, particleCount: Math.floor(280 * ratio), origin: { y: 0.68 } });
+  const burst = (ratio, opts) =>
+    confetti({ ...opts, particleCount: Math.floor(300 * ratio), origin: { y: 0.65 } });
 
-  burst(0.25, { spread: 28, startVelocity: 58, colors:['#ff0080','#ff80c0','#ffd6e7'] });
-  burst(0.20, { spread: 65, colors:['#ffdd00','#00ff88','#00ffcc'] });
-  burst(0.30, { spread: 105, decay: 0.90, scalar: 0.82, colors:['#00f5ff','#8b2be2','#c89fff'] });
-  burst(0.12, { spread: 125, startVelocity: 24, decay: 0.93, scalar: 1.25 });
-  burst(0.13, { spread: 125, startVelocity: 48, colors:['#fff','#ff0080','#00f5ff'] });
+  burst(0.25, { spread:28, startVelocity:58, colors:['#f97316','#fb923c','#fcd34d'] });
+  burst(0.20, { spread:65, colors:['#fff','#fed7aa','#fdba74'] });
+  burst(0.30, { spread:105, decay:0.90, scalar:0.82, colors:['#f97316','#ea580c','#ff8c00'] });
+  burst(0.12, { spread:125, startVelocity:24, decay:0.93, scalar:1.2 });
+  burst(0.13, { spread:125, startVelocity:48, colors:['#fff','#f97316','#fef3c7'] });
 
-  if (fromSides) {
+  if (sides) {
     setTimeout(() => {
-      C({ particleCount:120, angle:60,  spread:55, origin:{x:0},   colors:['#ff0080','#00f5ff','#ffdd00','#00ff88'] });
-      C({ particleCount:120, angle:120, spread:55, origin:{x:1},   colors:['#00ff88','#8b2be2','#ff80c0','#ffd6e7'] });
+      confetti({ particleCount:120, angle:60,  spread:55, origin:{x:0}, colors:['#f97316','#fb923c','#fcd34d'] });
+      confetti({ particleCount:120, angle:120, spread:55, origin:{x:1}, colors:['#f97316','#fb923c','#fff'] });
     }, 750);
   }
 }
 
-// ─── ACTIVATE BUTTON ─────────────────────────────────────────
+// ── ACTIVATE ──────────────────────────────────────────
 function activateSurprise() {
   fireConfetti(true);
   const btn = document.getElementById('btn-main');
   const txt = document.getElementById('btn-txt');
   btn.disabled = true;
-  txt.textContent = '¡ ¡ A C T I V A D O ! !';
+  txt.textContent = '¡¡ PROTOCOLO ACTIVADO !!';
   setTimeout(() => {
     txt.textContent = '¡ACTIVAR SORPRESA!';
     btn.disabled = false;
-  }, 2200);
+  }, 2400);
 }
 
-// ─── PANEL TOGGLES ───────────────────────────────────────────
+// ── PANEL TOGGLES ─────────────────────────────────────
 const state = { msg: false, gal: false, mis: false };
-const cfg = {
-  msg: { btn:'tb-msg', sw:'sw-msg', panel:'p-msg', ac:'ap', sc:'sp' },
-  gal: { btn:'tb-gal', sw:'sw-gal', panel:'p-gal', ac:'ac', sc:'sc' },
-  mis: { btn:'tb-mis', sw:'sw-mis', panel:'p-mis', ac:'ag', sc:'sg' },
-};
 
 function togglePanel(k) {
   state[k] = !state[k];
-  const c = cfg[k];
+  const on = state[k];
 
-  document.getElementById(c.btn).classList.toggle(c.ac, state[k]);
-  document.getElementById(c.sw).classList.toggle(c.sc, state[k]);
+  document.getElementById('mc-' + k).classList.toggle('active', on);
+  document.getElementById('sw-' + k).classList.toggle('on', on);
+  document.getElementById('st-' + k).textContent = on ? 'ONLINE' : 'STANDBY';
 
-  const panel = document.getElementById(c.panel);
-  if (state[k]) {
+  const panel = document.getElementById('p-' + k);
+  if (on) {
     panel.style.display = 'block';
     panel.style.animation = 'none';
     void panel.offsetHeight;
     panel.style.animation = 'slide-in 0.44s cubic-bezier(0.34,1.56,0.64,1) forwards';
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   } else {
     panel.style.display = 'none';
   }
 }
 
-// ─── MISSIONS ────────────────────────────────────────────────
+// ── MISSIONS ──────────────────────────────────────────
 function toggleMission(el) {
   el.classList.toggle('done');
   updateProgress();
 }
 
 function updateProgress() {
-  const items = document.querySelectorAll('.mission-item');
+  const total = document.querySelectorAll('.mission-item').length;
   const done  = document.querySelectorAll('.mission-item.done').length;
-  const total = items.length;
   document.getElementById('p-fill').style.width = (done / total * 100) + '%';
   document.getElementById('p-count').textContent = done + '/' + total;
   if (done === total) setTimeout(() => fireConfetti(false), 300);
 }
 
-// ─── INITIAL CONFETTI ────────────────────────────────────────
+// ── KEYBOARD SHORTCUT ─────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') activateSurprise();
+});
+
+// ── INITIAL CONFETTI ──────────────────────────────────
 window.addEventListener('load', () => {
   setTimeout(() => {
-    if (window.confetti) {
-      window.confetti({
-        particleCount: 90, spread: 75,
-        origin: { y: 0.25 },
-        colors: ['#ff0080','#00f5ff','#ffdd00','#00ff88','#c89fff']
-      });
-    }
-  }, 900);
+    if (window.confetti)
+      confetti({ particleCount:80, spread:70, origin:{y:0.2},
+                 colors:['#f97316','#fb923c','#fcd34d','#fff','#fed7aa'] });
+  }, 950);
 });
 </script>
 </body>
