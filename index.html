@@ -30,28 +30,19 @@
       min-height: 100vh;
       overflow-x: hidden;
       position: relative;
+      margin: 0;
     }
 
-    /* delicadas flores de fondo */
-    body::before {
-      content: "🌸 🌼 🌷 💮 🌸";
+    /* canvas interactivo de fondo */
+    #interactive-canvas {
       position: fixed;
-      bottom: 10px;
-      right: 10px;
-      font-size: 28px;
-      opacity: 0.1;
-      pointer-events: none;
-      white-space: pre;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
       z-index: 0;
-    }
-
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(ellipse at 70% 30%, rgba(255, 192, 203, 0.03), transparent 70%);
-      pointer-events: none;
-      z-index: 0;
+      pointer-events: none; /* para que los clics pasen a los botones */
     }
 
     /* esquinas con forma suave */
@@ -340,19 +331,10 @@
       will-change: transform;
       filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
     }
-
     @keyframes fallFlower {
-      0% {
-        transform: translateY(0) rotate(0deg);
-        opacity: 1;
-      }
-      80% {
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(100vh) rotate(360deg);
-        opacity: 0;
-      }
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      80% { opacity: 1; }
+      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
     }
 
     @media (max-width: 860px) {
@@ -373,6 +355,9 @@
   </style>
 </head>
 <body>
+
+<!-- CANVAS DE FONDO INTERACTIVO (partículas que reaccionan al ratón) -->
+<canvas id="interactive-canvas"></canvas>
 
 <nav>
   <div class="nav-left">
@@ -466,8 +451,9 @@
       <div class="msg-body">
         <div class="msg-emoji-big">🎀🎂🌸</div>
         <p class="msg-text">
-          🌟 
-          FELIZ CUMPLEAÑOS SARAH
+          🌟 Sarah, hoy el universo viste de gala solo para ti. Que cada sonrisa se convierta en estrella y cada abrazo en un recuerdo eterno. <br>
+          Eres la chispa más brillante. Disfruta cada segundo de este día mágico, porque el mundo es más bonito contigo. 💫🌷
+          <br>¡Feliz cumpleaños, vales ORO!
         </p>
         <div class="emoji-row"><span>🌸</span><span>💖</span><span>🎂</span><span>✨</span><span>🦋</span></div>
       </div>
@@ -533,7 +519,169 @@
 </footer>
 
 <script>
-  // === CLOCK ===
+  // ------------------------------------------------------------------
+  // 1. FONDO INTERACTIVO: PARTÍCULAS (flores, pétalos y destellos)
+  // ------------------------------------------------------------------
+  const canvas = document.getElementById('interactive-canvas');
+  let ctx = canvas.getContext('2d');
+  let width = window.innerWidth;
+  let height = window.innerHeight;
+  
+  let particles = [];
+  const PARTICLE_COUNT = 65;   // cantidad de partículas mágicas
+  
+  let mouseX = width/2, mouseY = height/2;
+  let mouseActive = false;
+  
+  class MagicParticle {
+    constructor() {
+      this.x = Math.random() * width;
+      this.y = Math.random() * height;
+      this.size = Math.random() * 5 + 2;
+      this.speedX = (Math.random() - 0.5) * 0.25;
+      this.speedY = (Math.random() - 0.5) * 0.2;
+      this.alpha = Math.random() * 0.5 + 0.2;
+      this.type = Math.floor(Math.random() * 4); // 0: flor miniatura, 1: círculo brillo, 2: pétalo, 3: estrella
+      this.angle = Math.random() * Math.PI * 2;
+      this.rotSpeed = (Math.random() - 0.5) * 0.02;
+      // color pastel
+      this.hue = Math.random() * 40 + 330; // entre 330 y 370 (rosas/coral)
+      this.sat = 65 + Math.random() * 25;
+      this.light = 70 + Math.random() * 20;
+    }
+    
+    update() {
+      // movimiento suave tipo Browniano + ligera atracción/repulsión al mouse
+      let dx = mouseX - this.x;
+      let dy = mouseY - this.y;
+      let dist = Math.hypot(dx, dy);
+      if (mouseActive && dist < 120) {
+        let angle = Math.atan2(dy, dx);
+        let force = (120 - dist) / 120 * 0.6;
+        this.speedX -= Math.cos(angle) * force * 0.1;
+        this.speedY -= Math.sin(angle) * force * 0.1;
+      }
+      // límite de velocidad
+      this.speedX = Math.min(Math.max(this.speedX, -1.2), 1.2);
+      this.speedY = Math.min(Math.max(this.speedY, -1.2), 1.2);
+      this.x += this.speedX;
+      this.y += this.speedY;
+      this.angle += this.rotSpeed;
+      
+      // reborde suave con recolocación
+      if (this.x < -20) this.x = width + 20;
+      if (this.x > width + 20) this.x = -20;
+      if (this.y < -20) this.y = height + 20;
+      if (this.y > height + 20) this.y = -20;
+      
+      // pequeño fade dinámico
+      this.alpha = 0.3 + Math.sin(Date.now() * 0.001 * this.size + this.x) * 0.2;
+    }
+    
+    draw(ctx) {
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.angle);
+      ctx.globalAlpha = this.alpha * 0.8;
+      const color = `hsl(${this.hue}, ${this.sat}%, ${this.light}%)`;
+      ctx.fillStyle = color;
+      ctx.strokeStyle = `hsl(${this.hue}, ${this.sat}%, 75%)`;
+      ctx.lineWidth = 1;
+      
+      if (this.type === 0) {  // mini flor (4 pétalos)
+        for (let i = 0; i < 4; i++) {
+          ctx.save();
+          ctx.rotate(i * Math.PI/2);
+          ctx.beginPath();
+          ctx.ellipse(this.size * 0.8, 0, this.size * 0.9, this.size * 0.6, 0, 0, Math.PI*2);
+          ctx.fill();
+          ctx.restore();
+        }
+        ctx.beginPath();
+        ctx.arc(0, 0, this.size * 0.5, 0, Math.PI*2);
+        ctx.fillStyle = `hsl(45, 80%, 70%)`;
+        ctx.fill();
+      } 
+      else if (this.type === 1) { // círculo brillante
+        ctx.beginPath();
+        ctx.arc(0, 0, this.size, 0, Math.PI*2);
+        ctx.fill();
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = `hsl(${this.hue}, 80%, 70%)`;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+      else if (this.type === 2) { // forma de pétalo alargado
+        ctx.beginPath();
+        ctx.ellipse(0, 0, this.size, this.size * 0.5, 0, 0, Math.PI*2);
+        ctx.fill();
+        ctx.stroke();
+      }
+      else { // pequeña estrella
+        let spikes = 4;
+        let outerR = this.size;
+        let innerR = this.size * 0.45;
+        let step = Math.PI / spikes;
+        ctx.beginPath();
+        for (let i = 0; i < spikes * 2; i++) {
+          let r = (i % 2 === 0) ? outerR : innerR;
+          let x = r * Math.cos(i * step);
+          let y = r * Math.sin(i * step);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+  }
+  
+  function initParticles() {
+    particles = [];
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push(new MagicParticle());
+    }
+  }
+  
+  function animateBg() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, width, height);
+    // fondo sutil transparente para rastro vaporoso
+    for (let p of particles) {
+      p.update();
+      p.draw(ctx);
+    }
+    requestAnimationFrame(animateBg);
+  }
+  
+  function resizeCanvas() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+    // reiniciar partículas al tamaño nuevo
+    initParticles();
+  }
+  
+  window.addEventListener('resize', () => {
+    resizeCanvas();
+  });
+  
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    mouseActive = true;
+    setTimeout(() => { mouseActive = false; }, 300);
+  });
+  
+  // arrancar canvas interactivo
+  resizeCanvas();
+  initParticles();
+  animateBg();
+  
+  // ---- resto de funciones iguales: clock, countdown, confetti, lluvia de flores, paneles, etc. ----
+  
   function updateClock() {
     const now = new Date();
     const pad = n => String(n).padStart(2,'0');
@@ -543,8 +691,7 @@
   }
   updateClock();
   setInterval(updateClock, 1000);
-
-  // === COUNTDOWN 30 MAY ===
+  
   function updateCountdown() {
     const now = new Date();
     let target = new Date(now.getFullYear(), 4, 30, 0, 0, 0);
@@ -558,8 +705,7 @@
   }
   updateCountdown();
   setInterval(updateCountdown, 1000);
-
-  // 🌸 FUNCIÓN LLUVIA DE FLORES (EMOJIS)
+  
   function startFlowerRain(durationSec = 3, quantity = 65) {
     const flowers = ['🌸', '🌼', '🌷', '💐', '🌺', '🌸', '🌻', '🌹', '🌸', '💮'];
     const container = document.body;
@@ -574,21 +720,18 @@
       flowerDiv.classList.add('flower-drop');
       const randomFlower = flowers[Math.floor(Math.random() * flowers.length)];
       flowerDiv.textContent = randomFlower;
-      const size = Math.floor(Math.random() * 20 + 18); // 18px - 38px
+      const size = Math.floor(Math.random() * 20 + 18);
       flowerDiv.style.fontSize = size + 'px';
       flowerDiv.style.left = Math.random() * 100 + '%';
-      const duration = Math.random() * 3 + 2.5; // 2.5s - 5.5s
+      const duration = Math.random() * 3 + 2.5;
       flowerDiv.style.animationDuration = duration + 's';
-      const rotationDir = Math.random() > 0.5 ? 1 : -1;
-      flowerDiv.style.animationName = 'fallFlower';
       container.appendChild(flowerDiv);
       setTimeout(() => { if (flowerDiv && flowerDiv.remove) flowerDiv.remove(); }, duration * 1000);
     }
     interval = setInterval(createFlower, 65);
     for(let i = 0; i < quantity/2; i++) setTimeout(createFlower, Math.random() * 300);
   }
-
-  // confetti rosa
+  
   function fireConfetti(sides = true) {
     if (typeof confetti === 'undefined') { setTimeout(() => fireConfetti(sides), 300); return; }
     const rosePalette = ['#ff7b9c', '#ff9bbb', '#ffb7c5', '#ffd1dc', '#fdf0d5'];
@@ -603,11 +746,10 @@
       }
     }, 380);
   }
-
-  // ACTIVAR SORPRESA: CONFETI + LLUVIA DE FLORES
+  
   function activateSurprise() {
     fireConfetti(true);
-    startFlowerRain(4, 80);  // 4 segundos de lluvia, ~80 flores
+    startFlowerRain(4, 80);
     const btn = document.getElementById('btn-main');
     const txt = document.getElementById('btn-txt');
     btn.disabled = true;
@@ -617,8 +759,7 @@
       btn.disabled = false;
     }, 2600);
   }
-
-  // PANELES
+  
   const state = { msg: false, gal: false, mis: false };
   function togglePanel(k) {
     state[k] = !state[k];
@@ -637,8 +778,7 @@
       panel.style.display = 'none';
     }
   }
-
-  // MISIONES
+  
   function toggleMission(el) {
     el.classList.toggle('done');
     updateProgress();
@@ -657,9 +797,9 @@
       }, 180);
     }
   }
-
+  
   document.addEventListener('keydown', e => { if (e.key === 'Enter') activateSurprise(); });
-
+  
   window.addEventListener('load', () => {
     setTimeout(() => {
       if (typeof confetti !== 'undefined') {
