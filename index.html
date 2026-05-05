@@ -2,51 +2,68 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SARAH//BIRTHDAY_OS</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>🌸 SARAH // BIRTHDAY BLOOM 🌸</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/gh/catdad/canvas-confetti@1.9.0/dist/confetti.browser.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0c0c0a;
-      --card: #111110;
-      --orange: #f97316;
-      --orange-lo: rgba(249,115,22,0.12);
-      --orange-glo: rgba(249,115,22,0.38);
-      --text: #e6e4dc;
-      --muted: rgba(230,228,220,0.38);
-      --bk: 13px; /* bracket size */
-      --bw: 2px;  /* bracket border width */
+      --bg: #0f0b12;
+      --card: #1f1825;
+      --rose: #ff7b9c;
+      --rose-soft: #ffb7c5;
+      --rose-glo: rgba(255, 123, 156, 0.45);
+      --rose-lo: rgba(255, 123, 156, 0.12);
+      --lavender: #cdb4db;
+      --text: #f5eef7;
+      --muted: rgba(245, 238, 247, 0.55);
+      --bk: 13px;
+      --bw: 2px;
     }
 
     body {
-      font-family: 'Rajdhani', sans-serif;
-      background: var(--bg);
+      font-family: 'Quicksand', sans-serif;
+      background: radial-gradient(circle at 10% 20%, #1e1428, #0b0810);
       color: var(--text);
       min-height: 100vh;
       overflow-x: hidden;
+      position: relative;
     }
 
-    /* Subtle warm noise overlay */
+    /* delicadas flores de fondo */
     body::before {
-      content: '';
-      position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      background:
-        radial-gradient(ellipse 60% 40% at 50% 0%, rgba(249,115,22,0.04), transparent),
-        radial-gradient(ellipse 40% 60% at 0% 80%,  rgba(249,115,22,0.03), transparent);
+      content: "🌸 🌼 🌷 💮 🌸";
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      font-size: 28px;
+      opacity: 0.1;
+      pointer-events: none;
+      white-space: pre;
+      z-index: 0;
     }
 
-    /* ── CORNER BRACKET MIXIN ─────────────────────── */
-    .bc { position: relative; }
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at 70% 30%, rgba(255, 192, 203, 0.03), transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
 
+    /* esquinas con forma suave */
+    .bc { position: relative; }
     .bc::before, .bc::after,
     .bc > .ci::before, .bc > .ci::after {
       content: '';
       position: absolute;
-      width: var(--bk); height: var(--bk);
-      border: var(--bw) solid var(--orange);
+      width: var(--bk);
+      height: var(--bk);
+      border: var(--bw) solid var(--rose);
+      transition: border 0.2s ease;
     }
     .bc::before  { top:0;    left:0;  border-right:none; border-bottom:none; }
     .bc::after   { top:0;    right:0; border-left:none;  border-bottom:none; }
@@ -54,782 +71,604 @@
     .bc > .ci::before { bottom:0; left:0;  border-right:none; border-top:none; }
     .bc > .ci::after  { bottom:0; right:0; border-left:none;  border-top:none; }
 
-    /* ── NAVBAR ───────────────────────────────────── */
+    /* navbar */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-      height: 52px;
-      background: rgba(12,12,10,0.94);
-      border-bottom: 1px solid rgba(249,115,22,0.18);
+      height: 56px;
+      background: rgba(15, 11, 18, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 123, 156, 0.25);
       display: flex; align-items: center;
       justify-content: space-between;
-      padding: 0 24px;
-      backdrop-filter: blur(8px);
+      padding: 0 28px;
     }
-
-    .nav-left  { display: flex; align-items: center; gap: 10px; }
-    .nav-right { display: flex; align-items: center; gap: 18px;
-                 font-family: 'Share Tech Mono', monospace;
-                 font-size: 10px; color: var(--muted); letter-spacing: 1px; }
-
+    .nav-left { display: flex; align-items: center; gap: 12px; }
+    .nav-right { display: flex; align-items: center; gap: 20px; font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--lavender); letter-spacing: 0.8px; }
     .nav-icon {
-      width: 30px; height: 30px;
-      border: 1px solid rgba(249,115,22,0.35);
-      border-radius: 5px;
+      width: 34px; height: 34px;
+      border-radius: 40px;
+      background: rgba(255, 123, 156, 0.12);
+      border: 1px solid rgba(255, 123, 156, 0.4);
       display: flex; align-items: center; justify-content: center;
-      font-size: 14px; flex-shrink: 0;
+      font-size: 20px;
     }
-
     .nav-brand-text { line-height: 1.2; }
-    .nav-name { font-family: 'Share Tech Mono', monospace; font-size: 13px;
-                color: var(--orange); letter-spacing: 1px; }
-    .nav-sub  { font-family: 'Share Tech Mono', monospace; font-size: 8.5px;
-                color: var(--muted); letter-spacing: 1px; }
-
-    .nav-sep { width: 1px; height: 20px; background: rgba(249,115,22,0.15); }
-
-    .nav-armed {
-      color: var(--orange);
-      display: flex; align-items: center; gap: 6px;
-      font-weight: 600;
-    }
-
-    .pulse-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--orange);
-      box-shadow: 0 0 6px var(--orange);
-      animation: blink 1.4s ease-in-out infinite;
-    }
-
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.12} }
+    .nav-name { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 500; letter-spacing: 1px; color: var(--rose); }
+    .nav-sub  { font-family: 'Quicksand', monospace; font-size: 8px; color: var(--lavender); letter-spacing: 1px; }
+    .nav-sep { width: 1px; height: 18px; background: rgba(255, 123, 156, 0.3); }
+    .nav-armed { color: var(--rose-soft); display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 11px; }
+    .pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--rose); box-shadow: 0 0 8px #ff9bbb; animation: blink 1.2s ease-in-out infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
 
     .hide-sm { display: flex; align-items: center; gap: 18px; }
 
-    /* ── MAIN LAYOUT ──────────────────────────────── */
-    main {
-      position: relative; z-index: 1;
-      max-width: 1080px; margin: 0 auto;
-      padding: 88px 32px 80px;
-    }
+    /* main */
+    main { position: relative; z-index: 2; max-width: 1100px; margin: 0 auto; padding: 96px 28px 70px; }
 
-    /* ── HERO ─────────────────────────────────────── */
-    .hero { margin-bottom: 52px; }
-
+    /* hero */
+    .hero { margin-bottom: 48px; position: relative; }
     .target-label {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 11px; letter-spacing: 4px;
-      color: var(--orange); margin-bottom: 14px;
+      font-size: 10px; letter-spacing: 4px;
+      color: var(--rose-soft); margin-bottom: 14px;
+      background: rgba(255,123,156,0.1); display: inline-block;
+      padding: 0 8px; border-radius: 20px;
     }
-
     .hero-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(58px, 10vw, 116px);
-      line-height: 0.88;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(48px, 9vw, 100px);
+      font-weight: 500;
+      line-height: 1.1;
       color: var(--text);
-      margin-bottom: 22px;
+      text-shadow: 0 2px 12px rgba(255,123,156,0.2);
+      margin-bottom: 18px;
     }
-    .hero-title .o { color: var(--orange); }
-
+    .hero-title .o { color: var(--rose); font-weight: 600; background: linear-gradient(135deg, #ffb7c5, #ff7b9c); background-clip: text; -webkit-background-clip: text; color: transparent; }
     .hero-desc {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 12.5px; color: var(--muted);
-      line-height: 1.75; max-width: 500px;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 13px; color: var(--lavender);
+      line-height: 1.7; max-width: 550px;
+      font-weight: 400;
     }
-    .hero-desc span { color: var(--orange); }
+    .hero-desc span { color: var(--rose); font-weight: 600; }
 
-    /* ── COUNTDOWN ────────────────────────────────── */
+    /* countdown */
     .cd-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 44px;
+      gap: 16px;
+      margin-bottom: 50px;
     }
-
     .digit-card {
-      background: var(--card);
-      padding: 18px 10px 20px;
+      background: rgba(31, 24, 37, 0.7);
+      backdrop-filter: blur(4px);
+      border-radius: 20px;
+      padding: 18px 12px 20px;
       text-align: center;
+      border: 1px solid rgba(255, 123, 156, 0.2);
+      transition: transform 0.2s ease, box-shadow 0.2s;
     }
+    .digit-card:hover { transform: translateY(-4px); box-shadow: 0 12px 20px -12px rgba(255,123,156,0.3); border-color: rgba(255,123,156,0.5); }
+    .dl { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 3px; color: var(--rose-soft); display: block; margin-bottom: 8px; }
+    .dv { font-family: 'Playfair Display', serif; font-size: clamp(46px, 8vw, 72px); font-weight: 600; color: var(--rose); text-shadow: 0 0 18px var(--rose-glo); line-height: 1; display: block; }
 
-    .dl {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 9px; letter-spacing: 3px;
-      color: var(--muted);
-      display: block; margin-bottom: 10px;
-    }
-
-    .dv {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(44px, 9vw, 76px);
-      color: var(--orange);
-      text-shadow: 0 0 22px var(--orange-glo), 0 0 55px rgba(249,115,22,0.14);
-      line-height: 1; display: block;
-    }
-
-    /* ── ACTIVATE BUTTON ──────────────────────────── */
+    /* botón mágico */
     .btn-section { text-align: center; margin-bottom: 56px; }
-
     .btn-activate {
-      background: var(--orange);
-      border: none; border-radius: 50px;
-      padding: 17px 52px;
-      color: #0c0c0a;
-      font-family: 'Rajdhani', sans-serif;
-      font-weight: 700; font-size: 18px; letter-spacing: 3.5px;
+      background: linear-gradient(95deg, #ff7b9c, #ff9bbb);
+      border: none;
+      border-radius: 60px;
+      padding: 16px 48px;
+      color: #1f1429;
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 2px;
       cursor: pointer;
-      display: inline-flex; align-items: center; gap: 12px;
-      box-shadow: 0 0 32px var(--orange-glo), 0 0 80px rgba(249,115,22,0.10);
-      transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s;
-      position: relative; overflow: hidden;
-      -webkit-appearance: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 10px 24px rgba(255,123,156,0.4), 0 0 0 1px rgba(255,255,210,0.2);
+      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+      position: relative;
+      overflow: hidden;
     }
-
     .btn-activate::after {
       content: '';
       position: absolute; top: 0; left: -100%;
       width: 100%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+      background: linear-gradient(90deg, transparent, rgba(255,255,245,0.5), transparent);
       transition: left 0.5s;
     }
-
-    .btn-activate:hover {
-      transform: scale(1.06);
-      box-shadow: 0 0 55px var(--orange-glo), 0 0 120px rgba(249,115,22,0.18);
-    }
+    .btn-activate:hover { transform: scale(1.05); box-shadow: 0 16px 32px rgba(255,123,156,0.6); }
     .btn-activate:hover::after { left: 100%; }
     .btn-activate:active { transform: scale(0.97); }
+    .btn-enter { font-size: 11px; font-weight: 400; opacity: 0.8; letter-spacing: 2px; }
+    .btn-hint { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 2.5px; color: var(--lavender); margin-top: 14px; }
 
-    .btn-enter {
-      font-size: 11px; font-weight: 400;
-      opacity: 0.7; letter-spacing: 2px;
-    }
-
-    .btn-hint {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 9.5px; letter-spacing: 3.5px;
-      color: var(--muted); margin-top: 12px;
-    }
-
-    /* ── MODULE CARDS ─────────────────────────────── */
+    /* módulos */
     .modules-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 16px;
+      gap: 16px;
+      margin-bottom: 24px;
     }
-
     .module-card {
-      background: var(--card);
-      padding: 16px 18px;
-      display: flex; align-items: center; gap: 14px;
+      background: rgba(31, 24, 37, 0.8);
+      backdrop-filter: blur(4px);
+      border-radius: 28px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
       cursor: pointer;
-      transition: background 0.3s ease;
-      user-select: none;
+      transition: all 0.25s ease;
+      border: 1px solid rgba(255, 123, 156, 0.15);
     }
-
-    .module-card:hover   { background: rgba(249,115,22,0.04); }
-    .module-card.active  { background: rgba(249,115,22,0.07); }
-
+    .module-card:hover { background: rgba(255, 123, 156, 0.08); border-color: rgba(255, 123, 156, 0.4); }
+    .module-card.active { background: rgba(255, 123, 156, 0.12); border-color: var(--rose); }
     .mod-icon {
-      width: 40px; height: 40px;
-      border: 1px solid rgba(249,115,22,0.28);
-      border-radius: 7px;
+      width: 48px; height: 48px;
+      border-radius: 30px;
+      background: rgba(255, 123, 156, 0.1);
+      border: 1px solid rgba(255, 123, 156, 0.3);
       display: flex; align-items: center; justify-content: center;
-      font-size: 17px; flex-shrink: 0;
+      font-size: 24px;
       transition: all 0.3s;
     }
-    .module-card.active .mod-icon {
-      border-color: var(--orange);
-      background: var(--orange-lo);
-      box-shadow: 0 0 12px rgba(249,115,22,0.2);
-    }
-
-    .mod-body { flex: 1; min-width: 0; }
-
-    .mod-code {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 8.5px; color: var(--orange);
-      letter-spacing: 2px; margin-bottom: 3px;
-    }
-
-    .mod-name {
-      font-family: 'Rajdhani', sans-serif;
-      font-weight: 700; font-size: 17px;
-      letter-spacing: 0.5px; color: var(--text);
-      display: block; white-space: nowrap;
-      overflow: hidden; text-overflow: ellipsis;
-    }
-
-    .mod-status {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 8.5px; color: var(--muted);
-      letter-spacing: 1px; margin-top: 3px;
-      display: flex; align-items: center; gap: 5px;
-    }
-
-    .status-dot-sm {
-      width: 5px; height: 5px; border-radius: 50%;
-      background: var(--muted); flex-shrink: 0;
-      transition: all 0.3s;
-    }
-    .module-card.active .status-dot-sm {
-      background: var(--orange);
-      box-shadow: 0 0 5px var(--orange);
-      animation: blink 1.4s ease-in-out infinite;
-    }
-
-    /* Toggle switch */
+    .module-card.active .mod-icon { background: var(--rose-lo); border-color: var(--rose); box-shadow: 0 0 16px rgba(255,123,156,0.3); }
+    .mod-body { flex: 1; }
+    .mod-code { font-family: 'Share Tech Mono', monospace; font-size: 8px; color: var(--rose-soft); letter-spacing: 1.5px; margin-bottom: 4px; }
+    .mod-name { font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: -0.2px; color: var(--text); }
+    .mod-status { font-family: 'Share Tech Mono', monospace; font-size: 8px; color: var(--muted); display: flex; align-items: center; gap: 5px; margin-top: 5px; }
+    .status-dot-sm { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); transition: 0.2s; }
+    .module-card.active .status-dot-sm { background: var(--rose); box-shadow: 0 0 8px var(--rose); animation: blink 1s infinite; }
     .sw-track {
-      width: 44px; height: 24px; border-radius: 12px;
-      background: rgba(255,255,255,0.07);
+      width: 48px; height: 24px; border-radius: 40px;
+      background: rgba(255,255,255,0.1);
       padding: 3px;
       display: flex; align-items: center; justify-content: flex-start;
-      transition: all 0.38s cubic-bezier(0.68,-0.55,0.27,1.55);
+      transition: all 0.35s cubic-bezier(0.34, 1.2, 0.64, 1);
       flex-shrink: 0;
     }
-    .sw-track.on { background: var(--orange); justify-content: flex-end; }
+    .sw-track.on { background: linear-gradient(120deg, #ff7b9c, #ffb7c5); justify-content: flex-end; }
+    .sw-thumb { width: 18px; height: 18px; border-radius: 50%; background: #fffdfa; box-shadow: 0 1px 6px rgba(0,0,0,0.2); }
 
-    .sw-thumb {
-      width: 18px; height: 18px; border-radius: 50%;
-      background: #fff;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.45);
-    }
-
-    /* ── PANELS ───────────────────────────────────── */
+    /* paneles */
     .panel {
-      background: var(--card);
-      padding: 26px 28px;
-      margin-bottom: 12px;
-      animation: slide-in 0.44s cubic-bezier(0.34,1.56,0.64,1) forwards;
+      background: rgba(28, 20, 35, 0.85);
+      backdrop-filter: blur(8px);
+      border-radius: 32px;
+      padding: 28px 30px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(255, 123, 156, 0.2);
+      animation: slide-up 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
     }
-
-    @keyframes slide-in {
-      from { opacity:0; transform:translateY(18px) scale(0.97); }
-      to   { opacity:1; transform:translateY(0)    scale(1); }
+    @keyframes slide-up {
+      from { opacity:0; transform: translateY(28px) scale(0.97); }
+      to   { opacity:1; transform: translateY(0) scale(1); }
     }
-
     .panel-hdr {
       font-family: 'Share Tech Mono', monospace;
-      font-size: 10px; letter-spacing: 3px;
-      color: var(--orange);
-      margin-bottom: 22px;
-      padding-bottom: 14px;
-      border-bottom: 1px solid rgba(249,115,22,0.14);
-      display: flex; align-items: center; gap: 10px;
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--rose-soft);
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed rgba(255, 123, 156, 0.4);
+      display: flex; align-items: center; gap: 12px;
     }
+    .panel-hdr::before { content: '🌸'; font-size: 14px; background: none; box-shadow: none; width: auto; height: auto; }
 
-    .panel-hdr::before {
-      content: '';
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--orange);
-      box-shadow: 0 0 8px var(--orange);
-      animation: blink 1.2s ease-in-out infinite;
-      flex-shrink: 0;
-    }
-
-    /* Message */
     .msg-body { text-align: center; }
+    .msg-emoji-big { font-size: 58px; margin-bottom: 20px; filter: drop-shadow(0 6px 12px rgba(255,123,156,0.3)); }
+    .msg-text { font-size: 17px; line-height: 1.8; color: rgba(245, 238, 247, 0.88); max-width: 550px; margin: 0 auto 24px; font-weight: 400; }
+    .emoji-row { display: flex; justify-content: center; gap: 20px; }
+    .emoji-row span { font-size: 28px; animation: float 3s ease-in-out infinite; display: inline-block; }
+    .emoji-row span:nth-child(2){animation-delay:.4s}
+    .emoji-row span:nth-child(3){animation-delay:.8s}
+    .emoji-row span:nth-child(4){animation-delay:1.2s}
+    .emoji-row span:nth-child(5){animation-delay:1.6s}
+    @keyframes float { 0%,100%{transform: translateY(0px);} 50%{transform: translateY(-10px);} }
 
-    .msg-emoji-big { font-size: 44px; margin-bottom: 18px; }
-
-    .msg-text {
-      font-size: 16.5px; line-height: 1.95;
-      color: rgba(230,228,220,0.82);
-      max-width: 520px; margin: 0 auto 22px;
-    }
-
-    .emoji-row { display: flex; justify-content: center; gap: 16px; }
-    .emoji-row span {
-      font-size: 24px; display: inline-block;
-      animation: floaty 3s ease-in-out infinite;
-    }
-    .emoji-row span:nth-child(2){animation-delay:.5s}
-    .emoji-row span:nth-child(3){animation-delay:1s}
-    .emoji-row span:nth-child(4){animation-delay:1.5s}
-    .emoji-row span:nth-child(5){animation-delay:2s}
-
-    @keyframes floaty { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-9px)} }
-
-    /* Gallery */
     .gallery-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+      gap: 14px;
     }
-
     .photo-card {
-      overflow: hidden; aspect-ratio: 1;
-      border: 1px solid rgba(249,115,22,0.14);
-      border-radius: 3px;
-      transition: transform 0.38s cubic-bezier(0.34,1.56,0.64,1), border-color 0.3s, box-shadow 0.3s;
-      cursor: pointer; position: relative;
-    }
-    .photo-card:nth-child(1){transform:rotate(-2deg)}
-    .photo-card:nth-child(2){transform:rotate(1.8deg)}
-    .photo-card:nth-child(3){transform:rotate(-1deg)}
-    .photo-card:nth-child(4){transform:rotate(2.2deg)}
-    .photo-card:nth-child(5){transform:rotate(-1.5deg)}
-    .photo-card:nth-child(6){transform:rotate(2.5deg)}
-
-    .photo-card:hover {
-      transform: rotate(0) scale(1.08) !important;
-      z-index: 10; border-color: var(--orange);
-      box-shadow: 0 14px 40px rgba(249,115,22,0.22);
-    }
-    .photo-card img { width:100%; height:100%; object-fit:cover; display:block; }
-
-    .gallery-footer {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 8.5px; letter-spacing: 3px;
-      color: var(--muted); text-align: center;
-      margin-top: 14px;
-    }
-
-    /* Missions */
-    .mission-item {
-      display: flex; align-items: center; gap: 12px;
-      background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.05);
-      border-left: 2px solid transparent;
-      padding: 14px 16px;
+      overflow: hidden;
+      aspect-ratio: 1;
+      border-radius: 24px;
+      background: #2a1e33;
+      box-shadow: 0 10px 20px -5px rgba(0,0,0,0.4);
+      transition: all 0.35s cubic-bezier(0.2, 0.9, 0.6, 1.1);
       cursor: pointer;
-      transition: all 0.3s ease;
-      margin-bottom: 8px;
-      user-select: none;
+      border: 2px solid rgba(255, 123, 156, 0.2);
     }
-    .mission-item:hover { background:var(--orange-lo); border-left-color:rgba(249,115,22,0.4); }
-    .mission-item.done  { background:rgba(249,115,22,0.07); border-left-color:var(--orange); }
+    .photo-card:hover { transform: scale(1.03) rotate(0deg) !important; border-color: var(--rose); box-shadow: 0 20px 28px -10px rgba(255,123,156,0.5); }
+    .photo-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .gallery-footer { font-family: 'Quicksand', monospace; font-size: 8px; letter-spacing: 2px; color: var(--lavender); text-align: center; margin-top: 18px; }
 
-    .m-emoji { font-size: 20px; flex-shrink:0; }
+    .mission-item {
+      display: flex; align-items: center; gap: 14px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 40px;
+      border: 1px solid rgba(255, 123, 156, 0.2);
+      border-left: 3px solid var(--rose);
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: all 0.25s;
+      margin-bottom: 12px;
+    }
+    .mission-item:hover { background: rgba(255, 123, 156, 0.08); transform: translateX(4px); }
+    .mission-item.done { background: rgba(255,123,156,0.1); border-left-color: #ffb347; opacity: 0.85; }
+    .m-emoji { font-size: 24px; flex-shrink: 0; }
+    .m-text { flex: 1; font-size: 14px; font-weight: 500; color: #f3eafa; }
+    .mission-item.done .m-text { text-decoration: line-through; color: rgba(255, 123, 156, 0.6); }
+    .m-xp { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: #ffb7c5; background: rgba(255,123,156,0.1); border-radius: 40px; padding: 4px 12px; }
+    .m-check { width: 26px; height: 26px; background: rgba(255,255,240,0.05); border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: transparent; transition: 0.2s; }
+    .mission-item.done .m-check { background: #ff7b9c; color: #2a1a33; box-shadow: 0 0 8px #ff9bbb; }
 
-    .m-text {
-      flex:1; font-size: 14.5px;
-      color: rgba(230,228,220,0.85); transition: all 0.3s;
-    }
-    .mission-item.done .m-text { text-decoration:line-through; color:rgba(249,115,22,0.45); }
+    .prog-row { margin-top: 24px; display: flex; align-items: center; gap: 16px; background: rgba(0,0,0,0.3); border-radius: 40px; padding: 8px 18px; }
+    .p-lbl { font-family: 'Share Tech Mono', monospace; font-size: 8px; letter-spacing: 2px; color: var(--rose-soft); }
+    .p-bar { flex: 1; height: 6px; background: rgba(255,255,245,0.1); border-radius: 10px; }
+    .p-fill { height: 100%; background: linear-gradient(90deg, #ff7b9c, #ffb7c5); border-radius: 10px; box-shadow: 0 0 6px #ffb7c5; transition: width 0.45s ease; }
+    .p-count { font-family: 'Quicksand', monospace; font-size: 12px; color: var(--rose); font-weight: 600; }
 
-    .m-xp {
-      font-family: 'Share Tech Mono', monospace; font-size: 9.5px;
-      color: var(--orange);
-      background: rgba(249,115,22,0.08);
-      border: 1px solid rgba(249,115,22,0.18);
-      padding: 3px 9px; flex-shrink:0;
-    }
-
-    .m-check {
-      width: 22px; height: 22px;
-      border: 2px solid rgba(255,255,255,0.12);
-      border-radius: 2px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 13px; font-weight: 700;
-      flex-shrink: 0; transition: all 0.3s; color: transparent;
-    }
-    .mission-item.done .m-check {
-      background: var(--orange); border-color: var(--orange);
-      color: #0c0c0a; box-shadow: 0 0 10px rgba(249,115,22,0.4);
-    }
-
-    /* Progress bar */
-    .prog-row {
-      margin-top: 18px; display: flex; align-items: center; gap: 14px;
-    }
-    .p-lbl {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 8.5px; letter-spacing: 2.5px;
-      color: var(--muted); flex-shrink:0;
-    }
-    .p-bar { flex:1; height: 3px; background:rgba(255,255,255,0.07); }
-    .p-fill {
-      height: 100%; background: var(--orange);
-      box-shadow: 0 0 8px var(--orange-glo);
-      transition: width 0.55s ease;
-    }
-    .p-count {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 10px; color: var(--orange); flex-shrink:0;
-    }
-
-    /* ── FOOTER ───────────────────────────────────── */
     footer {
-      position: relative; z-index: 1;
-      border-top: 1px solid rgba(249,115,22,0.12);
-      padding: 18px 32px;
-      display: flex; justify-content: space-between; align-items: center;
-      max-width: 1080px; margin: 0 auto;
+      position: relative; z-index: 2;
+      border-top: 1px solid rgba(255, 123, 156, 0.2);
+      padding: 20px 28px;
+      display: flex; justify-content: space-between;
+      align-items: center;
+      max-width: 1100px; margin: 0 auto;
+      flex-wrap: wrap;
+    }
+    .f-log { font-family: 'Share Tech Mono', monospace; font-size: 8px; letter-spacing: 1.5px; color: rgba(205, 180, 219, 0.5); }
+    .f-eot { font-family: 'Quicksand', monospace; font-size: 9px; letter-spacing: 2px; color: var(--rose-soft); display: flex; align-items: center; gap: 8px; }
+    .cursor-blink { display: inline-block; width: 8px; height: 14px; background: #ff7b9c; border-radius: 2px; animation: blink 0.9s step-end infinite; }
+
+    /* 🌸 LLUVIA DE FLORES (elementos flotantes) */
+    .flower-drop {
+      position: fixed;
+      top: -30px;
+      pointer-events: none;
+      z-index: 9999;
+      font-size: 1.8rem;
+      animation: fallFlower linear forwards;
+      will-change: transform;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
     }
 
-    .f-log {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 9.5px; letter-spacing: 2px;
-      color: rgba(230,228,220,0.18);
+    @keyframes fallFlower {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+      80% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
     }
 
-    .f-eot {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 9.5px; letter-spacing: 2px;
-      color: var(--orange);
-      display: flex; align-items: center; gap: 8px;
-    }
-
-    .cursor-blink {
-      display: inline-block; width: 8px; height: 14px;
-      background: var(--orange);
-      animation: blink 1s step-end infinite;
-    }
-
-    /* ── RESPONSIVE ───────────────────────────────── */
     @media (max-width: 860px) {
-      .modules-grid { grid-template-columns: 1fr; }
+      .modules-grid { grid-template-columns: 1fr; gap: 12px; }
       .hide-sm { display: none !important; }
     }
-
     @media (max-width: 600px) {
-      main { padding: 76px 14px 60px; }
-      nav  { padding: 0 14px; }
-
-      .nav-name { font-size: 11px; }
-      .nav-sub  { font-size: 7.5px; }
-
-      .hero { margin-bottom: 36px; }
-      .hero-title { font-size: clamp(52px, 14vw, 90px); }
-
-      .cd-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-      .digit-card { padding: 14px 8px 16px; }
-
-      .btn-activate { padding: 14px 28px; font-size: 15px; letter-spacing: 2.5px; gap: 8px; }
-
+      main { padding: 80px 16px 50px; }
+      nav { padding: 0 16px; }
+      .cd-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .panel { padding: 20px 18px; }
       .gallery-grid { grid-template-columns: repeat(2, 1fr); }
-
-      .panel { padding: 18px 16px; }
-
-      footer { padding: 14px 14px; flex-direction: column; gap: 8px; text-align: center; }
-      .f-log, .f-eot { font-size: 8px; }
-    }
-
-    @media (max-width: 380px) {
-      .cd-grid { gap: 6px; }
-      .mod-name { font-size: 15px; }
+      .hero-title { font-size: clamp(40px, 12vw, 70px); }
+      .btn-activate { padding: 12px 28px; font-size: 15px; }
+      footer { flex-direction: column; gap: 8px; text-align: center; }
+      .flower-drop { font-size: 1.4rem; }
     }
   </style>
 </head>
 <body>
 
-<!-- NAVBAR -->
 <nav>
   <div class="nav-left">
-    <div class="nav-icon">⚙️</div>
+    <div class="nav-icon">🌸</div>
     <div class="nav-brand-text">
-      <div class="nav-name">SARAH//BIRTHDAY_OS</div>
-      <div class="nav-sub">v2.4.0 · MAY_30 · MISSION CONTROL</div>
+      <div class="nav-name">SARAH // BLOOM_OS</div>
+      <div class="nav-sub">✨ EDICIÓN FLORECER · 30/MAY ✨</div>
     </div>
   </div>
   <div class="nav-right">
     <div class="hide-sm">
-      <span>⚡ UPLINK</span>
+      <span>🌸 UPLINK</span>
       <div class="nav-sep"></div>
-      <span>🔋 98%</span>
+      <span>🌙 98%</span>
       <div class="nav-sep"></div>
       <span id="nav-clock">—</span>
     </div>
     <div class="nav-sep hide-sm"></div>
     <div class="nav-armed">
       <div class="pulse-dot"></div>
-      SYSTEM: ARMED
+      CELEBRACIÓN: FLORIDA
     </div>
   </div>
 </nav>
 
-<!-- MAIN -->
 <main>
-
-  <!-- HERO -->
   <section class="hero">
-    <p class="target-label">::: TARGET ACQUIRED :::</p>
+    <p class="target-label">✧ ☆ TARGET: DÍA ESPECIAL ☆ ✧</p>
     <h1 class="hero-title">
       CUENTA REGRESIVA<br>
-      <span class="o">PARA SARAH.</span>
+      <span class="o">PARA SARAH 🌸</span>
     </h1>
     <p class="hero-desc">
-      <span>&gt;</span> Sistema de celebración inicializado. Todos los protocolos de
-      cumpleaños están en línea. Activa los módulos cuando estés listo,
-      comandante.
+      <span>✦</span> Protocolo de cumpleaños con mucho brillo. Activa los módulos mágicos,<br>
+      cumple misiones y celebra con flores, confeti y todo el amor. <span>✦</span>
     </p>
   </section>
 
   <!-- COUNTDOWN -->
   <div class="cd-grid">
-    <div class="bc digit-card"><div class="ci"></div>
-      <span class="dl">DÍAS</span>
-      <span class="dv" id="days">00</span>
-    </div>
-    <div class="bc digit-card"><div class="ci"></div>
-      <span class="dl">HORAS</span>
-      <span class="dv" id="hours">00</span>
-    </div>
-    <div class="bc digit-card"><div class="ci"></div>
-      <span class="dl">MIN</span>
-      <span class="dv" id="minutes">00</span>
-    </div>
-    <div class="bc digit-card"><div class="ci"></div>
-      <span class="dl">SEG</span>
-      <span class="dv" id="seconds">00</span>
-    </div>
+    <div class="bc digit-card"><div class="ci"></div><span class="dl">DÍAS</span><span class="dv" id="days">00</span></div>
+    <div class="bc digit-card"><div class="ci"></div><span class="dl">HORAS</span><span class="dv" id="hours">00</span></div>
+    <div class="bc digit-card"><div class="ci"></div><span class="dl">MINUTOS</span><span class="dv" id="minutes">00</span></div>
+    <div class="bc digit-card"><div class="ci"></div><span class="dl">SEGUNDOS</span><span class="dv" id="seconds">00</span></div>
   </div>
 
-  <!-- BUTTON -->
   <div class="btn-section">
     <button class="btn-activate" id="btn-main" onclick="activateSurprise()">
-      <span>🎉</span>
-      <span id="btn-txt">¡ACTIVAR SORPRESA!</span>
-      <span class="btn-enter">[ENTER]</span>
+      <span>🎀</span>
+      <span id="btn-txt">✨ ACTIVAR MAGIA ✨</span>
+      <span class="btn-enter">[🌸]</span>
     </button>
-    <p class="btn-hint">PRESIONA PARA DETONAR EL PROTOCOLO DE FIESTA</p>
+    <p class="btn-hint">PRESIONA PARA DETONAR LLUVIA DE FLORES Y CONFETI</p>
   </div>
 
-  <!-- MODULES -->
   <div class="modules-grid">
-
     <div class="bc module-card" id="mc-msg" onclick="togglePanel('msg')"><div class="ci"></div>
-      <div class="mod-icon" id="ic-msg">📡</div>
+      <div class="mod-icon" id="ic-msg">💌</div>
       <div class="mod-body">
-        <div class="mod-code">MOD_01 · CIPHER</div>
-        <span class="mod-name">MENSAJE SEGURO</span>
-        <div class="mod-status">
-          <span class="status-dot-sm" id="dot-msg"></span>
-          <span id="st-msg">STANDBY</span>
-        </div>
+        <div class="mod-code">MOD_01 · CARTA ESTELAR</div>
+        <span class="mod-name">MENSAJE SECRETO</span>
+        <div class="mod-status"><span class="status-dot-sm" id="dot-msg"></span><span id="st-msg">STANDBY</span></div>
       </div>
       <div class="sw-track" id="sw-msg"><div class="sw-thumb"></div></div>
     </div>
 
     <div class="bc module-card" id="mc-gal" onclick="togglePanel('gal')"><div class="ci"></div>
-      <div class="mod-icon" id="ic-gal">✨</div>
+      <div class="mod-icon" id="ic-gal">📸✨</div>
       <div class="mod-body">
-        <div class="mod-code">MOD_02 · GALLERY</div>
-        <span class="mod-name">MEDIA UPLINK</span>
-        <div class="mod-status">
-          <span class="status-dot-sm" id="dot-gal"></span>
-          <span id="st-gal">STANDBY</span>
-        </div>
+        <div class="mod-code">MOD_02 · POLAROID DREAMS</div>
+        <span class="mod-name">RECUERDOS DULCES</span>
+        <div class="mod-status"><span class="status-dot-sm" id="dot-gal"></span><span id="st-gal">STANDBY</span></div>
       </div>
       <div class="sw-track" id="sw-gal"><div class="sw-thumb"></div></div>
     </div>
 
     <div class="bc module-card" id="mc-mis" onclick="togglePanel('mis')"><div class="ci"></div>
-      <div class="mod-icon" id="ic-mis">⚡</div>
+      <div class="mod-icon" id="ic-mis">🎀✨</div>
       <div class="mod-body">
-        <div class="mod-code">MOD_03 · TASK FORCE</div>
-        <span class="mod-name">MISSION LOGS</span>
-        <div class="mod-status">
-          <span class="status-dot-sm" id="dot-mis"></span>
-          <span id="st-mis">STANDBY</span>
-        </div>
+        <div class="mod-code">MOD_03 · BIRTHDAY QUESTS</div>
+        <span class="mod-name">MISIONES TOP SECRET</span>
+        <div class="mod-status"><span class="status-dot-sm" id="dot-mis"></span><span id="st-mis">STANDBY</span></div>
       </div>
       <div class="sw-track" id="sw-mis"><div class="sw-thumb"></div></div>
     </div>
+  </div>
 
-  </div><!-- /modules -->
-
-  <!-- PANELS AREA -->
   <div id="panels-area">
-
-    <!-- MESSAGE -->
     <div id="p-msg" class="bc panel" style="display:none"><div class="ci"></div>
-      <div class="panel-hdr">:: MOD_01 TRANSMISIÓN ACTIVA ::</div>
+      <div class="panel-hdr">💖 MENSAJE CIFRADO CON CARIÑO 💖</div>
       <div class="msg-body">
-        <div class="msg-emoji-big">🎂</div>
+        <div class="msg-emoji-big">🎀🎂🌸</div>
         <p class="msg-text">
-          En este día especial, el universo entero conspira para recordarte
-          lo increíble que eres. Que este año esté lleno de aventuras inesperadas,
-          risas que duelan el estómago y momentos que se conviertan en tus
-          mejores recuerdos. ¡Feliz cumpleaños, que lo celebres a lo grande! 🌟
+          🌟 Sarah, hoy el universo viste de gala solo para ti. Que cada sonrisa se convierta en estrella y cada abrazo en un recuerdo eterno. <br>
+          Eres la chispa más brillante. Disfruta cada segundo de este día mágico, porque el mundo es más bonito contigo. 💫🌷
+          <br>¡Feliz cumpleaños, vales ORO!
         </p>
-        <div class="emoji-row">
-          <span>💫</span><span>🌸</span><span>✨</span><span>🎉</span><span>💖</span>
-        </div>
+        <div class="emoji-row"><span>🌸</span><span>💖</span><span>🎂</span><span>✨</span><span>🦋</span></div>
       </div>
     </div>
 
-    <!-- GALLERY -->
     <div id="p-gal" class="bc panel" style="display:none"><div class="ci"></div>
-      <div class="panel-hdr">:: MOD_02 MEDIA UPLINK — ARCHIVOS CLASIFICADOS ::</div>
+      <div class="panel-hdr">📷 GALERÍA SECRETA — INSTANTES QUE BRILLAN 📷</div>
       <div class="gallery-grid">
-        <div class="photo-card"><img src="https://picsum.photos/seed/sb01/300/300" alt="Momento 1" loading="lazy"></div>
-        <div class="photo-card"><img src="https://picsum.photos/seed/sb02/300/300" alt="Momento 2" loading="lazy"></div>
-        <div class="photo-card"><img src="https://picsum.photos/seed/sb03/300/300" alt="Momento 3" loading="lazy"></div>
-        <div class="photo-card"><img src="https://picsum.photos/seed/sb04/300/300" alt="Momento 4" loading="lazy"></div>
-        <div class="photo-card"><img src="https://picsum.photos/seed/sb05/300/300" alt="Momento 5" loading="lazy"></div>
-        <div class="photo-card"><img src="https://picsum.photos/seed/sb06/300/300" alt="Momento 6" loading="lazy"></div>
+        <div class="photo-card"><img src="https://picsum.photos/seed/sarahbloom1/300/300?grayscale&seed=flor1" alt="momento florido" loading="lazy"></div>
+        <div class="photo-card"><img src="https://picsum.photos/seed/sarahbloom2/300/300?grayscale&seed=pastel2" alt="magia" loading="lazy"></div>
+        <div class="photo-card"><img src="https://picsum.photos/seed/sarahbloom3/300/300?grayscale&seed=primavera3" alt="sonrisa" loading="lazy"></div>
+        <div class="photo-card"><img src="https://picsum.photos/seed/sarahbloom4/300/300?grayscale&seed=amistad4" alt="brillo" loading="lazy"></div>
+        <div class="photo-card"><img src="https://picsum.photos/seed/sarahbloom5/300/300?grayscale&seed=estrella5" alt="recuerdo" loading="lazy"></div>
+        <div class="photo-card"><img src="https://picsum.photos/seed/sarahbloom6/300/300?grayscale&seed=cielo6" alt="felicidad" loading="lazy"></div>
       </div>
-      <p class="gallery-footer">RECUERDOS_CLASIFICADOS :: ACCESO_NIVEL_MÁXIMO</p>
+      <p class="gallery-footer">🌸 CADA FOTO ES UN TESORO · NIVEL AMISTAD INFINITA 🌸</p>
     </div>
 
-    <!-- MISSIONS -->
     <div id="p-mis" class="bc panel" style="display:none"><div class="ci"></div>
-      <div class="panel-hdr">:: MOD_03 MISSION LOGS — OBJETIVOS ACTIVOS ::</div>
-
+      <div class="panel-hdr">🎀 MISIONES FLORECER · COMPLETA Y SUBE DE NIVEL 🎀</div>
       <div class="mission-item" onclick="toggleMission(this)">
-        <span class="m-emoji">🎂</span>
-        <span class="m-text">Soplar las velas de un solo intento</span>
+        <span class="m-emoji">🕯️</span>
+        <span class="m-text">Soplar las velas pidiendo un deseo con los ojos cerrados</span>
         <span class="m-xp">500 XP</span>
         <div class="m-check">✓</div>
       </div>
       <div class="mission-item" onclick="toggleMission(this)">
-        <span class="m-emoji">🥂</span>
-        <span class="m-text">Brindar con todos los presentes</span>
+        <span class="m-emoji">🥂🍓</span>
+        <span class="m-text">Brindar con tu bebida favorita y sonreír</span>
         <span class="m-xp">300 XP</span>
         <div class="m-check">✓</div>
       </div>
       <div class="mission-item" onclick="toggleMission(this)">
-        <span class="m-emoji">📸</span>
-        <span class="m-text">Tomarse la foto perfecta del día</span>
+        <span class="m-emoji">📸🎀</span>
+        <span class="m-text">Tomarte la selfie más linda del día</span>
         <span class="m-xp">400 XP</span>
         <div class="m-check">✓</div>
       </div>
       <div class="mission-item" onclick="toggleMission(this)">
-        <span class="m-emoji">🕺</span>
-        <span class="m-text">Bailar aunque no suene tu canción favorita</span>
+        <span class="m-emoji">💃🦋</span>
+        <span class="m-text">Bailar como si nadie te mirara (aunque sea 30 seg)</span>
         <span class="m-xp">350 XP</span>
         <div class="m-check">✓</div>
       </div>
       <div class="mission-item" onclick="toggleMission(this)">
-        <span class="m-emoji">🌟</span>
-        <span class="m-text">Pedir un deseo súper secreto</span>
+        <span class="m-emoji">🌟✨</span>
+        <span class="m-text">Escribir tu deseo más loco y guardarlo</span>
         <span class="m-xp">999 XP</span>
         <div class="m-check">✓</div>
       </div>
-
       <div class="prog-row">
-        <span class="p-lbl">PROGRESO</span>
+        <span class="p-lbl">🌸 PROGRESO 🌸</span>
         <div class="p-bar"><div class="p-fill" id="p-fill" style="width:0%"></div></div>
         <span class="p-count" id="p-count">0/5</span>
       </div>
     </div>
-
-  </div><!-- /panels-area -->
-
+  </div>
 </main>
 
-<!-- FOOTER -->
 <footer>
-  <span class="f-log">:: LOG: BIRTHDAY_OS :: BUILD_2026 :: FOR_SARAH :: WITH_LOVE</span>
-  <span class="f-eot">END_OF_TRANSMISSION <span class="cursor-blink"></span></span>
+  <span class="f-log">🌸 BIRTHDAY BLOOM_OS · PARA SARAH CON TODO EL AMOR 🌸</span>
+  <span class="f-eot">✨ FIN DE TRANSMISIÓN <span class="cursor-blink"></span></span>
 </footer>
 
 <script>
-// ── CLOCK ──────────────────────────────────────────────
-function updateClock() {
-  const now = new Date();
-  const pad = n => String(n).padStart(2,'0');
-  const str = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())} UTC`;
-  const el = document.getElementById('nav-clock');
-  if (el) el.textContent = str;
-}
-updateClock();
-setInterval(updateClock, 1000);
-
-// ── COUNTDOWN ─────────────────────────────────────────
-function updateCountdown() {
-  const now = new Date();
-  const target = new Date(now.getFullYear(), 4, 30, 0, 0, 0);
-  if (now >= target) target.setFullYear(target.getFullYear() + 1);
-  const diff = target - now;
-  const pad = n => String(Math.floor(n)).padStart(2,'0');
-  document.getElementById('days').textContent    = pad(diff / 86400000);
-  document.getElementById('hours').textContent   = pad((diff % 86400000) / 3600000);
-  document.getElementById('minutes').textContent = pad((diff % 3600000) / 60000);
-  document.getElementById('seconds').textContent = pad((diff % 60000) / 1000);
-}
-updateCountdown();
-setInterval(updateCountdown, 1000);
-
-// ── CONFETTI ──────────────────────────────────────────
-function fireConfetti(sides) {
-  if (typeof confetti === 'undefined') {
-    console.warn('Confetti library not loaded yet, retrying...');
-    setTimeout(() => fireConfetti(sides), 300);
-    return;
+  // === CLOCK ===
+  function updateClock() {
+    const now = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    const str = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    const el = document.getElementById('nav-clock');
+    if (el) el.textContent = str;
   }
-  
-  const burst = (ratio, opts) =>
-    confetti({ ...opts, particleCount: Math.floor(300 * ratio), origin: { y: 0.65 } });
+  updateClock();
+  setInterval(updateClock, 1000);
 
-  burst(0.25, { spread:28, startVelocity:58, colors:['#f97316','#fb923c','#fcd34d'] });
-  burst(0.20, { spread:65, colors:['#fff','#fed7aa','#fdba74'] });
-  burst(0.30, { spread:105, decay:0.90, scalar:0.82, colors:['#f97316','#ea580c','#ff8c00'] });
-  burst(0.12, { spread:125, startVelocity:24, decay:0.93, scalar:1.2 });
-  burst(0.13, { spread:125, startVelocity:48, colors:['#fff','#f97316','#fef3c7'] });
+  // === COUNTDOWN 30 MAY ===
+  function updateCountdown() {
+    const now = new Date();
+    let target = new Date(now.getFullYear(), 4, 30, 0, 0, 0);
+    if (now > target) target.setFullYear(target.getFullYear() + 1);
+    const diff = target - now;
+    const pad = n => String(Math.floor(n)).padStart(2,'0');
+    document.getElementById('days').textContent = pad(diff / 86400000);
+    document.getElementById('hours').textContent = pad((diff % 86400000) / 3600000);
+    document.getElementById('minutes').textContent = pad((diff % 3600000) / 60000);
+    document.getElementById('seconds').textContent = pad((diff % 60000) / 1000);
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
 
-  if (sides) {
+  // 🌸 FUNCIÓN LLUVIA DE FLORES (EMOJIS)
+  function startFlowerRain(durationSec = 3, quantity = 65) {
+    const flowers = ['🌸', '🌼', '🌷', '💐', '🌺', '🌸', '🌻', '🌹', '🌸', '💮'];
+    const container = document.body;
+    const endTime = Date.now() + durationSec * 1000;
+    let interval;
+    function createFlower() {
+      if (Date.now() > endTime) {
+        clearInterval(interval);
+        return;
+      }
+      const flowerDiv = document.createElement('div');
+      flowerDiv.classList.add('flower-drop');
+      const randomFlower = flowers[Math.floor(Math.random() * flowers.length)];
+      flowerDiv.textContent = randomFlower;
+      const size = Math.floor(Math.random() * 20 + 18); // 18px - 38px
+      flowerDiv.style.fontSize = size + 'px';
+      flowerDiv.style.left = Math.random() * 100 + '%';
+      const duration = Math.random() * 3 + 2.5; // 2.5s - 5.5s
+      flowerDiv.style.animationDuration = duration + 's';
+      const rotationDir = Math.random() > 0.5 ? 1 : -1;
+      flowerDiv.style.animationName = 'fallFlower';
+      container.appendChild(flowerDiv);
+      setTimeout(() => { if (flowerDiv && flowerDiv.remove) flowerDiv.remove(); }, duration * 1000);
+    }
+    interval = setInterval(createFlower, 65);
+    for(let i = 0; i < quantity/2; i++) setTimeout(createFlower, Math.random() * 300);
+  }
+
+  // confetti rosa
+  function fireConfetti(sides = true) {
+    if (typeof confetti === 'undefined') { setTimeout(() => fireConfetti(sides), 300); return; }
+    const rosePalette = ['#ff7b9c', '#ff9bbb', '#ffb7c5', '#ffd1dc', '#fdf0d5'];
+    confetti({ particleCount: 160, spread: 75, origin: { y: 0.6 }, colors: rosePalette, scalar: 0.9, startVelocity: 22 });
+    confetti({ particleCount: 110, angle: 60, spread: 55, origin: { x: 0.2, y: 0.5 }, colors: rosePalette, startVelocity: 28 });
+    confetti({ particleCount: 110, angle: 120, spread: 55, origin: { x: 0.8, y: 0.5 }, colors: rosePalette, startVelocity: 28 });
     setTimeout(() => {
-      confetti({ particleCount:120, angle:60,  spread:55, origin:{x:0}, colors:['#f97316','#fb923c','#fcd34d'] });
-      confetti({ particleCount:120, angle:120, spread:55, origin:{x:1}, colors:['#f97316','#fb923c','#fff'] });
-    }, 750);
+      confetti({ particleCount: 240, spread: 100, origin: { y: 0.45 }, colors: ['#ffb7c5', '#ff7b9c', '#ffe0f0'], decay: 0.9 });
+      if (sides) {
+        confetti({ particleCount: 90, angle: 45, spread: 48, origin: { x: 0 }, colors: ['#ff9bbb', '#ffd1dc'] });
+        confetti({ particleCount: 90, angle: 135, spread: 48, origin: { x: 1 }, colors: ['#ff9bbb', '#ffd1dc'] });
+      }
+    }, 380);
   }
-}
 
-// ── ACTIVATE ──────────────────────────────────────────
-function activateSurprise() {
-  fireConfetti(true);
-  const btn = document.getElementById('btn-main');
-  const txt = document.getElementById('btn-txt');
-  btn.disabled = true;
-  txt.textContent = '¡¡ PROTOCOLO ACTIVADO !!';
-  setTimeout(() => {
-    txt.textContent = '¡ACTIVAR SORPRESA!';
-    btn.disabled = false;
-  }, 2400);
-}
-
-// ── PANEL TOGGLES ─────────────────────────────────────
-const state = { msg: false, gal: false, mis: false };
-
-function togglePanel(k) {
-  state[k] = !state[k];
-  const on = state[k];
-
-  document.getElementById('mc-' + k).classList.toggle('active', on);
-  document.getElementById('sw-' + k).classList.toggle('on', on);
-  document.getElementById('st-' + k).textContent = on ? 'ONLINE' : 'STANDBY';
-
-  const panel = document.getElementById('p-' + k);
-  if (on) {
-    panel.style.display = 'block';
-    panel.style.animation = 'none';
-    void panel.offsetHeight;
-    panel.style.animation = 'slide-in 0.44s cubic-bezier(0.34,1.56,0.64,1) forwards';
-    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  } else {
-    panel.style.display = 'none';
+  // ACTIVAR SORPRESA: CONFETI + LLUVIA DE FLORES
+  function activateSurprise() {
+    fireConfetti(true);
+    startFlowerRain(4, 80);  // 4 segundos de lluvia, ~80 flores
+    const btn = document.getElementById('btn-main');
+    const txt = document.getElementById('btn-txt');
+    btn.disabled = true;
+    txt.innerHTML = '🎉🌸 MAGIA DESATADA 🌸🎉';
+    setTimeout(() => {
+      txt.innerHTML = '✨ ACTIVAR MAGIA ✨';
+      btn.disabled = false;
+    }, 2600);
   }
-}
 
-// ── MISSIONS ──────────────────────────────────────────
-function toggleMission(el) {
-  el.classList.toggle('done');
-  updateProgress();
-}
+  // PANELES
+  const state = { msg: false, gal: false, mis: false };
+  function togglePanel(k) {
+    state[k] = !state[k];
+    const on = state[k];
+    document.getElementById('mc-' + k).classList.toggle('active', on);
+    document.getElementById('sw-' + k).classList.toggle('on', on);
+    document.getElementById('st-' + k).textContent = on ? 'ONLINE' : 'STANDBY';
+    const panel = document.getElementById('p-' + k);
+    if (on) {
+      panel.style.display = 'block';
+      panel.style.animation = 'none';
+      void panel.offsetHeight;
+      panel.style.animation = 'slide-up 0.5s cubic-bezier(0.2,0.9,0.4,1.1) forwards';
+      panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else {
+      panel.style.display = 'none';
+    }
+  }
 
-function updateProgress() {
-  const total = document.querySelectorAll('.mission-item').length;
-  const done  = document.querySelectorAll('.mission-item.done').length;
-  document.getElementById('p-fill').style.width = (done / total * 100) + '%';
-  document.getElementById('p-count').textContent = done + '/' + total;
-  if (done === total) setTimeout(() => fireConfetti(false), 300);
-}
+  // MISIONES
+  function toggleMission(el) {
+    el.classList.toggle('done');
+    updateProgress();
+  }
+  function updateProgress() {
+    const total = document.querySelectorAll('.mission-item').length;
+    const done = document.querySelectorAll('.mission-item.done').length;
+    const fill = document.getElementById('p-fill');
+    if (fill) fill.style.width = (done / total * 100) + '%';
+    const countSpan = document.getElementById('p-count');
+    if (countSpan) countSpan.textContent = done + '/' + total;
+    if (done === total && done > 0) {
+      setTimeout(() => {
+        fireConfetti(false);
+        startFlowerRain(3, 45);
+      }, 180);
+    }
+  }
 
-// ── KEYBOARD SHORTCUT ─────────────────────────────────
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter') activateSurprise();
-});
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') activateSurprise(); });
 
-// ── INITIAL CONFETTI ──────────────────────────────────
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    if (typeof confetti !== 'undefined')
-      confetti({ particleCount:80, spread:70, origin:{y:0.2},
-                 colors:['#f97316','#fb923c','#fcd34d','#fff','#fed7aa'] });
-  }, 500);
-});
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      if (typeof confetti !== 'undefined') {
+        confetti({ particleCount: 55, spread: 55, origin: { y: 0.3 }, colors: ['#ffb7c5', '#ff7b9c', '#ffe3ed'] });
+      }
+    }, 500);
+    updateProgress();
+  });
 </script>
 </body>
 </html>
