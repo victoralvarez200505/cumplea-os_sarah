@@ -31,6 +31,7 @@
       overflow-x: hidden;
       position: relative;
       margin: 0;
+      touch-action: pan-y pinch-zoom; /* permite scroll vertical pero no zoom excesivo, el polvo funciona igual */
     }
 
     /* canvas interactivo de fondo */
@@ -42,10 +43,10 @@
       height: 100%;
       display: block;
       z-index: 0;
-      pointer-events: none; /* para que los clics pasen a los botones */
+      pointer-events: none;
     }
 
-    /* esquinas con forma suave */
+    /* esquinas suaves */
     .bc { position: relative; }
     .bc::before, .bc::after,
     .bc > .ci::before, .bc > .ci::after {
@@ -320,7 +321,7 @@
     .f-eot { font-family: 'Quicksand', monospace; font-size: 9px; letter-spacing: 2px; color: var(--rose-soft); display: flex; align-items: center; gap: 8px; }
     .cursor-blink { display: inline-block; width: 8px; height: 14px; background: #ff7b9c; border-radius: 2px; animation: blink 0.9s step-end infinite; }
 
-    /* 🌸 LLUVIA DE FLORES (elementos flotantes) */
+    /* 🌸 LLUVIA DE FLORES */
     .flower-drop {
       position: fixed;
       top: -30px;
@@ -356,7 +357,6 @@
 </head>
 <body>
 
-<!-- CANVAS DE FONDO INTERACTIVO (partículas que reaccionan al ratón) -->
 <canvas id="interactive-canvas"></canvas>
 
 <nav>
@@ -396,7 +396,6 @@
     </p>
   </section>
 
-  <!-- COUNTDOWN -->
   <div class="cd-grid">
     <div class="bc digit-card"><div class="ci"></div><span class="dl">DÍAS</span><span class="dv" id="days">00</span></div>
     <div class="bc digit-card"><div class="ci"></div><span class="dl">HORAS</span><span class="dv" id="hours">00</span></div>
@@ -451,7 +450,9 @@
       <div class="msg-body">
         <div class="msg-emoji-big">🎀🎂🌸</div>
         <p class="msg-text">
-          🌟 FELIZ CUMPLEAÑOS SARAH
+          🌟 Sarah, hoy el universo viste de gala solo para ti. Que cada sonrisa se convierta en estrella y cada abrazo en un recuerdo eterno. <br>
+          Eres la chispa más brillante. Disfruta cada segundo de este día mágico, porque el mundo es más bonito contigo. 💫🌷
+          <br>¡Feliz cumpleaños, vales ORO!
         </p>
         <div class="emoji-row"><span>🌸</span><span>💖</span><span>🎂</span><span>✨</span><span>🦋</span></div>
       </div>
@@ -517,76 +518,87 @@
 </footer>
 
 <script>
-  // ------------------------------------------------------------------
-  // 1. FONDO INTERACTIVO: PARTÍCULAS (flores, pétalos y destellos)
-  // ------------------------------------------------------------------
+  // ============================================================
+  // CANVAS INTERACTIVO: PARTÍCULAS FLOTANTES + RASTRO DE POLVO MÁGICO
+  // SOPORTE COMPLETO PARA TÁCTIL (MÓVIL)
+  // ============================================================
   const canvas = document.getElementById('interactive-canvas');
   let ctx = canvas.getContext('2d');
   let width = window.innerWidth;
   let height = window.innerHeight;
   
   let particles = [];
-  const PARTICLE_COUNT = 65;   // cantidad de partículas mágicas
+  const PARTICLE_COUNT = 75;
   
+  let dustParticles = [];
+  const MAX_DUST = 220;
   let mouseX = width/2, mouseY = height/2;
+  let lastX = mouseX, lastY = mouseY;
   let mouseActive = false;
   
+  // ---- Partículas de fondo (flores mágicas) ----
   class MagicParticle {
     constructor() {
       this.x = Math.random() * width;
       this.y = Math.random() * height;
-      this.size = Math.random() * 5 + 2;
-      this.speedX = (Math.random() - 0.5) * 0.25;
-      this.speedY = (Math.random() - 0.5) * 0.2;
-      this.alpha = Math.random() * 0.5 + 0.2;
-      this.type = Math.floor(Math.random() * 4); // 0: flor miniatura, 1: círculo brillo, 2: pétalo, 3: estrella
+      this.size = Math.random() * 5 + 2.5;
+      this.speedX = (Math.random() - 0.5) * 0.28;
+      this.speedY = (Math.random() - 0.5) * 0.24;
+      this.alpha = Math.random() * 0.6 + 0.3;
+      this.type = Math.floor(Math.random() * 4);
       this.angle = Math.random() * Math.PI * 2;
-      this.rotSpeed = (Math.random() - 0.5) * 0.02;
-      // color pastel
-      this.hue = Math.random() * 40 + 330; // entre 330 y 370 (rosas/coral)
+      this.rotSpeed = (Math.random() - 0.5) * 0.025;
+      this.hue = Math.random() * 60 + 300;
+      this.targetHue = this.hue;
       this.sat = 65 + Math.random() * 25;
-      this.light = 70 + Math.random() * 20;
+      this.light = 68 + Math.random() * 18;
+      this.colorChangeSpeed = 0.003 + Math.random() * 0.008;
+      this.changeInterval = setInterval(() => {
+        if (Math.random() < 0.4) {
+          this.targetHue = Math.random() * 80 + 290;
+          if (this.targetHue > 360) this.targetHue -= 360;
+        }
+      }, 1800 + Math.random() * 2000);
     }
-    
+    updateColor() {
+      let diff = this.targetHue - this.hue;
+      if (Math.abs(diff) > 180) diff += (diff > 0) ? -360 : 360;
+      this.hue += diff * this.colorChangeSpeed;
+      if (this.hue < 0) this.hue += 360;
+      if (this.hue >= 360) this.hue -= 360;
+    }
     update() {
-      // movimiento suave tipo Browniano + ligera atracción/repulsión al mouse
       let dx = mouseX - this.x;
       let dy = mouseY - this.y;
       let dist = Math.hypot(dx, dy);
-      if (mouseActive && dist < 120) {
+      if (mouseActive && dist < 130) {
         let angle = Math.atan2(dy, dx);
-        let force = (120 - dist) / 120 * 0.6;
-        this.speedX -= Math.cos(angle) * force * 0.1;
-        this.speedY -= Math.sin(angle) * force * 0.1;
+        let force = (130 - dist) / 130 * 0.65;
+        this.speedX -= Math.cos(angle) * force * 0.12;
+        this.speedY -= Math.sin(angle) * force * 0.12;
       }
-      // límite de velocidad
       this.speedX = Math.min(Math.max(this.speedX, -1.2), 1.2);
       this.speedY = Math.min(Math.max(this.speedY, -1.2), 1.2);
       this.x += this.speedX;
       this.y += this.speedY;
       this.angle += this.rotSpeed;
-      
-      // reborde suave con recolocación
-      if (this.x < -20) this.x = width + 20;
-      if (this.x > width + 20) this.x = -20;
-      if (this.y < -20) this.y = height + 20;
-      if (this.y > height + 20) this.y = -20;
-      
-      // pequeño fade dinámico
-      this.alpha = 0.3 + Math.sin(Date.now() * 0.001 * this.size + this.x) * 0.2;
+      if (this.x < -30) this.x = width + 30;
+      if (this.x > width + 30) this.x = -30;
+      if (this.y < -30) this.y = height + 30;
+      if (this.y > height + 30) this.y = -30;
+      this.updateColor();
+      this.alpha = 0.4 + Math.sin(Date.now() * 0.0012 * this.size + this.x) * 0.2;
     }
-    
     draw(ctx) {
       ctx.save();
       ctx.translate(this.x, this.y);
       ctx.rotate(this.angle);
-      ctx.globalAlpha = this.alpha * 0.8;
+      ctx.globalAlpha = this.alpha * 0.85;
       const color = `hsl(${this.hue}, ${this.sat}%, ${this.light}%)`;
       ctx.fillStyle = color;
       ctx.strokeStyle = `hsl(${this.hue}, ${this.sat}%, 75%)`;
       ctx.lineWidth = 1;
-      
-      if (this.type === 0) {  // mini flor (4 pétalos)
+      if (this.type === 0) {
         for (let i = 0; i < 4; i++) {
           ctx.save();
           ctx.rotate(i * Math.PI/2);
@@ -597,25 +609,22 @@
         }
         ctx.beginPath();
         ctx.arc(0, 0, this.size * 0.5, 0, Math.PI*2);
-        ctx.fillStyle = `hsl(45, 80%, 70%)`;
+        ctx.fillStyle = `hsl(48, 85%, 72%)`;
         ctx.fill();
-      } 
-      else if (this.type === 1) { // círculo brillante
+      } else if (this.type === 1) {
         ctx.beginPath();
         ctx.arc(0, 0, this.size, 0, Math.PI*2);
         ctx.fill();
-        ctx.shadowBlur = 8;
+        ctx.shadowBlur = 12;
         ctx.shadowColor = `hsl(${this.hue}, 80%, 70%)`;
         ctx.fill();
         ctx.shadowBlur = 0;
-      }
-      else if (this.type === 2) { // forma de pétalo alargado
+      } else if (this.type === 2) {
         ctx.beginPath();
         ctx.ellipse(0, 0, this.size, this.size * 0.5, 0, 0, Math.PI*2);
         ctx.fill();
         ctx.stroke();
-      }
-      else { // pequeña estrella
+      } else {
         let spikes = 4;
         let outerR = this.size;
         let innerR = this.size * 0.45;
@@ -633,22 +642,103 @@
       }
       ctx.restore();
     }
+    destroy() { clearInterval(this.changeInterval); }
+  }
+  
+  // ---- Polvo mágico que se desvanece ----
+  class DustParticle {
+    constructor(x, y, vx, vy) {
+      this.x = x;
+      this.y = y;
+      this.vx = vx + (Math.random() - 0.5) * 0.8;
+      this.vy = vy + (Math.random() - 0.5) * 0.8;
+      this.size = Math.random() * 3 + 1.5;
+      this.life = 1.0;
+      this.decay = 0.015 + Math.random() * 0.02;
+      this.hue = Math.random() * 50 + 310;
+      this.sat = 70 + Math.random() * 25;
+      this.light = 70 + Math.random() * 20;
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      this.life -= this.decay;
+      this.vx *= 0.97;
+      this.vy *= 0.97;
+      return this.life > 0;
+    }
+    draw(ctx) {
+      ctx.globalAlpha = this.life * 0.8;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+      ctx.fillStyle = `hsl(${this.hue}, ${this.sat}%, ${this.light}%)`;
+      ctx.fill();
+      ctx.shadowBlur = 6;
+      ctx.shadowColor = `hsl(${this.hue}, 80%, 70%)`;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
   }
   
   function initParticles() {
+    for (let p of particles) if(p.destroy) p.destroy();
     particles = [];
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      particles.push(new MagicParticle());
+    for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new MagicParticle());
+  }
+  
+  function addDustAt(x, y, intensity = 1) {
+    let count = Math.floor(Math.random() * 3 + 2) * Math.min(1.8, intensity);
+    for (let i = 0; i < count; i++) {
+      if (dustParticles.length > MAX_DUST) dustParticles.shift();
+      let angle = Math.random() * Math.PI * 2;
+      let speed = Math.random() * 1.2;
+      let vx = Math.cos(angle) * speed;
+      let vy = Math.sin(angle) * speed;
+      dustParticles.push(new DustParticle(x, y, vx, vy));
     }
   }
+  
+  // ---- Eventos: ratón y táctil ----
+  function handleMove(clientX, clientY) {
+    let newX = clientX;
+    let newY = clientY;
+    mouseX = newX;
+    mouseY = newY;
+    mouseActive = true;
+    setTimeout(() => { mouseActive = false; }, 300);
+    
+    let dist = Math.hypot(newX - lastX, newY - lastY);
+    let intensity = Math.min(1.8, dist / 15);
+    addDustAt(newX, newY, intensity);
+    lastX = newX;
+    lastY = newY;
+  }
+  
+  document.addEventListener('mousemove', (e) => handleMove(e.clientX, e.clientY));
+  document.addEventListener('touchmove', (e) => {
+    e.preventDefault(); // mejora la experiencia táctil, evita scroll mientras se genera polvo
+    if (e.touches.length) {
+      handleMove(e.touches[0].clientX, e.touches[0].clientY);
+    }
+  }, { passive: false });
+  
+  document.addEventListener('touchstart', (e) => {
+    if (e.touches.length) {
+      let tx = e.touches[0].clientX, ty = e.touches[0].clientY;
+      mouseX = tx; mouseY = ty;
+      lastX = tx; lastY = ty;
+      addDustAt(tx, ty, 0.8);
+    }
+  });
   
   function animateBg() {
     if (!ctx) return;
     ctx.clearRect(0, 0, width, height);
-    // fondo sutil transparente para rastro vaporoso
-    for (let p of particles) {
-      p.update();
-      p.draw(ctx);
+    for (let p of particles) { p.update(); p.draw(ctx); }
+    for (let i = dustParticles.length-1; i >= 0; i--) {
+      let d = dustParticles[i];
+      if (d.update()) d.draw(ctx);
+      else dustParticles.splice(i,1);
     }
     requestAnimationFrame(animateBg);
   }
@@ -658,28 +748,13 @@
     height = window.innerHeight;
     canvas.width = width;
     canvas.height = height;
-    // reiniciar partículas al tamaño nuevo
     initParticles();
   }
-  
-  window.addEventListener('resize', () => {
-    resizeCanvas();
-  });
-  
-  document.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    mouseActive = true;
-    setTimeout(() => { mouseActive = false; }, 300);
-  });
-  
-  // arrancar canvas interactivo
+  window.addEventListener('resize', resizeCanvas);
   resizeCanvas();
-  initParticles();
   animateBg();
   
-  // ---- resto de funciones iguales: clock, countdown, confetti, lluvia de flores, paneles, etc. ----
-  
+  // ========== RESTO DE FUNCIONES (reloj, cuenta regresiva, confeti, etc) ==========
   function updateClock() {
     const now = new Date();
     const pad = n => String(n).padStart(2,'0');
@@ -710,10 +785,7 @@
     const endTime = Date.now() + durationSec * 1000;
     let interval;
     function createFlower() {
-      if (Date.now() > endTime) {
-        clearInterval(interval);
-        return;
-      }
+      if (Date.now() > endTime) { clearInterval(interval); return; }
       const flowerDiv = document.createElement('div');
       flowerDiv.classList.add('flower-drop');
       const randomFlower = flowers[Math.floor(Math.random() * flowers.length)];
